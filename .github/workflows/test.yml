@@ -1,0 +1,41 @@
+
+name: Test
+
+on: [push]
+
+jobs:
+  testfreebsd:
+    runs-on: macos-12
+    name: A job to run test OpenBSD
+    env:
+      MYTOKEN : ${{ secrets.MYTOKEN }}
+      MYTOKEN2: "value2"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Test in OpenBSD
+      id: test
+      uses: vmactions/freebsd-vm@main
+      with:
+        envs: 'MYTOKEN MYTOKEN2'
+        prepare: pkg_add curl
+        mem: 2048
+        nat: |
+          "8080": "80"
+          "8443": "443"
+          udp:"8081": "80"
+        usesh: true
+        run: |
+          if [ -n "test" ]; then
+            echo "false"
+          fi
+          if [ "test" ]; then
+            echo "test"
+          fi
+          pwd
+          ls -lah
+          whoami
+          env
+          uname -a
+          grep -i mem /var/run/dmesg.boot
+          sysctl -a | egrep -i 'hw.machine|hw.model|hw.ncpu'
+          echo "OK"
