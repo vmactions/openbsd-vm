@@ -12,7 +12,7 @@ async function sleep(ms) {
 async function execSSH(cmd, desp = "") {
   core.info(desp);
   core.info("exec ssh: " + cmd);
-  await exec.exec("ssh -t -i " + __dirname + "/mac.id_rsa  openbsd", [], { input: cmd });
+  await exec.exec("ssh -t openbsd", [], { input: cmd });
 }
 
 
@@ -79,6 +79,8 @@ async function setup(nat, mem) {
     fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " User root" + "\n");
     fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " HostName localhost" + "\n");
     fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " Port 2224" + "\n");
+    fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " IdentityFile=~/.ssh/mac.id_rsa\n");
+
     fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), "StrictHostKeyChecking=accept-new\n");
 
 
@@ -112,6 +114,8 @@ async function setup(nat, mem) {
     fs.appendFileSync(path.join(sshHome, "config"), "SendEnv   CI  GITHUB_* \n");
     await exec.exec("chmod 700 " + sshHome);
 
+
+    await io.mv(path.join(workingDir, "/mac.id_rsa"), "/Users/runner/.ssh/mac.id_rsa");
 
 
     let vmName = "openbsd";
