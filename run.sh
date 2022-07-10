@@ -15,11 +15,14 @@ _script_home="$(dirname "$_script")"
 cd "$_script_home"
 
 
-if [ ! -e "openbsd-6.9.conf" ]; then
+_conf_filename="$(echo "$CONF_LINK" | rev  | cut -d / -f 1 | rev)"
+echo "Config file: $_conf_filename"
+
+if [ ! -e "$_conf_filename" ]; then
   wget -q "$CONF_LINK"
 fi
 
-. openbsd-6.9.conf
+. $_conf_filename
 
 
 ##########################################################
