@@ -1,124 +1,38 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
-const tc = require('@actions/tool-cache');
-const io = require('@actions/io');
 const fs = require("fs");
 const path = require("path");
 
-async function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
+
+
+var osname = "openbsd";
+var loginTag = "OpenBSD/amd64 (openbsd.my.domain) (tty";
+var workingDir = __dirname;
 
 async function execSSH(cmd, desp = "") {
   core.info(desp);
   core.info("exec ssh: " + cmd);
-  await exec.exec("ssh -t openbsd", [], { input: cmd });
+  await exec.exec("ssh -t " + osname, [], { input: cmd });
 }
 
 
-
-async function getScreenText(vmName) {
-  let png = path.join(__dirname, "/screen.png");
-  await vboxmanage(vmName, "controlvm", "screenshotpng  " + png);
-  await exec.exec("sudo chmod 666 " + png);
-  let output = "";
-  await exec.exec("pytesseract  " + png, [], {
-    listeners: {
-      silent: true,
-      stdout: (s) => {
-        output += s;
-      }
-    }
-  });
-  return output;
-}
-
-async function waitFor(vmName, tag) {
-
-  let slept = 0;
-  while (true) {
-    slept += 1;
-    if (slept >= 300) {
-      throw new Error("Timeout can not boot");
-    }
-    await sleep(1000);
-
-    let output = await getScreenText(vmName);
-
-    if (tag) {
-      if (output.includes(tag)) {
-        core.info("OK");
-        await sleep(1000);
-        return true;
-      } else {
-        core.info("Checking, please wait....");
-      }
-    } else {
-      if (!output.trim()) {
-        core.info("OK");
-        return true;
-      } else {
-        core.info("Checking, please wait....");
-      }
-    }
-
+async function shell(cmd, cdToScriptHome = true) {
+  core.info("exec shell: " + cmd);
+  if(cdToScriptHome) {
+    await exec.exec("bash", [], { input: "cd " + workingDir + " && (" + cmd + ")" });
+  } else {
+    await exec.exec("bash", [], { input:  cmd  });
   }
 
-  return false;
+
 }
 
-
-async function vboxmanage(vmName, cmd, args = "") {
-  await exec.exec("sudo  vboxmanage " + cmd + "   " + vmName + "   " + args);
-}
 
 async function setup(nat, mem) {
   try {
 
-    fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), "Host openbsd " + "\n");
-    fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " User root" + "\n");
-    fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " HostName localhost" + "\n");
-    fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " Port 2224" + "\n");
-    fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " IdentityFile=~/.ssh/mac.id_rsa\n");
+    await shell("bash run.sh importVM");
 
-    fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), "StrictHostKeyChecking=accept-new\n");
-
-
-    await exec.exec("brew install -qf tesseract", [], { silent: true });
-    await exec.exec("pip3 install -q pytesseract", [], { silent: true });
-
-    let workingDir = __dirname;
-
-    let imgName = "openbsd-6.9";
-    let ova = imgName + ".ova";
-    
-    let url = "https://github.com/vmactions/openbsd-builder/releases/download/v0.0.1/openbsd-6.9.ova.zip";
-
-    core.info("Downloading image: " + url);
-    let img = await tc.downloadTool(url);
-    core.info("Downloaded file: " + img);
-    await io.mv(img, path.join(workingDir, "./" + ova + ".zip"));
-
-
-    await exec.exec("7za e -y " + path.join(workingDir, ova + ".zip") + "  -o" + workingDir);
-    await vboxmanage("", "import", path.join(workingDir, ova));
-    
-    
-    
-
-    let sshHome = path.join(process.env["HOME"], ".ssh");
-    let authorized_keys = path.join(sshHome, "authorized_keys");
-
-    fs.appendFileSync(authorized_keys, fs.readFileSync(path.join(workingDir, "id_rsa.pub")));
-
-    fs.appendFileSync(path.join(sshHome, "config"), "SendEnv   CI  GITHUB_* \n");
-    await exec.exec("chmod 700 " + sshHome);
-
-
-    await io.mv(path.join(workingDir, "/mac.id_rsa"), "/Users/runner/.ssh/mac.id_rsa");
-
-
-    let vmName = "openbsd";
 
     if (nat) {
       let nats = nat.split("\n").filter(x => x !== "");
@@ -130,31 +44,31 @@ async function setup(nat, mem) {
           let proto = segs[0].trim().trim('"');
           let hostPort = segs[1].trim().trim('"');
           let vmPort = segs[2].trim().trim('"');
-          await vboxmanage(vmName, "modifyvm", "  --natpf1 '" + hostPort + "," + proto + ",," + hostPort + ",," + vmPort + "'");
+
+          await shell("bash vbox.sh addNAT " + osname + " " + proto + " " + hostPort + " " + vmPort);
 
         } else if (segs.length === 2) {
           let proto = "tcp"
           let hostPort = segs[0].trim().trim('"');
           let vmPort = segs[1].trim().trim('"');
-          await vboxmanage(vmName, "modifyvm", "  --natpf1 '" + hostPort + "," + proto + ",," + hostPort + ",," + vmPort + "'");
+          await shell("bash vbox.sh addNAT " + osname + " " + proto + " " + hostPort + " " + vmPort);
         }
       };
     }
 
     if (mem) {
-      await vboxmanage(vmName, "modifyvm", "  --memory " + mem);
+      await shell("bash vbox.sh setMemory " + osname + " " + mem);
     }
 
-    await vboxmanage(vmName, "modifyvm", " --cpus 3");
+    await shell("bash vbox.sh setCPU " + osname + " 3");
 
-    await vboxmanage(vmName, "startvm", " --type headless");
+    await shell("bash vbox.sh startVM " + osname );
 
     core.info("First boot");
 
-    let loginTag = "OpenBSD/amd64 (openbsd.my.domain) (tty";
-    await waitFor(vmName, loginTag);
 
 
+    await shell("bash vbox.sh waitForText " + osname + "  '"+ loginTag +"'");
 
 
     let cmd1 = "mkdir -p /Users/runner/work && ln -s /Users/runner/work/  work";
@@ -167,7 +81,7 @@ async function setup(nat, mem) {
     } else {
       let cmd2 = "pkg_add rsync-3.2.3p0-iconv";
       await execSSH(cmd2, "Setup rsync-3.2.3p0-iconv");
-      await exec.exec("rsync -auvzrtopg  --exclude _actions/vmactions/openbsd-vm  /Users/runner/work/ openbsd:work");
+      await shell("rsync -auvzrtopg  --exclude _actions/vmactions/" + osname+ "-vm  /Users/runner/work/ " + osname + ":work", false);
     }
 
     core.info("OK, Ready!");
@@ -175,6 +89,8 @@ async function setup(nat, mem) {
   }
   catch (error) {
     core.setFailed(error.message);
+    await shell("pwd && ls -lah" );
+    await shell("bash -c 'pwd && ls -lah ~/.ssh/ && cat ~/.ssh/config'" );
   }
 }
 
@@ -198,7 +114,7 @@ async function main() {
   var prepare = core.getInput("prepare");
   if (prepare) {
     core.info("Running prepare: " + prepare);
-    await exec.exec("ssh -t openbsd", [], { input: prepare });
+    await exec.exec("ssh -t " + osname, [], { input: prepare });
   }
 
   var run = core.getInput("run");
@@ -207,9 +123,9 @@ async function main() {
   try {
     var usesh = core.getInput("usesh").toLowerCase() == "true";
     if (usesh) {
-      await exec.exec("ssh openbsd sh -c 'cd $GITHUB_WORKSPACE && exec sh'", [], { input: run });
+      await exec.exec("ssh " + osname + " sh -c 'cd $GITHUB_WORKSPACE && exec sh'", [], { input: run });
     } else {
-      await exec.exec("ssh openbsd sh -c 'cd $GITHUB_WORKSPACE && exec \"$SHELL\"'", [], { input: run });
+      await exec.exec("ssh " + osname + " sh -c 'cd $GITHUB_WORKSPACE && exec \"$SHELL\"'", [], { input: run });
     }
   } catch (error) {
     core.setFailed(error.message);
@@ -219,7 +135,7 @@ async function main() {
       let sync = core.getInput("sync");
       if (sync != "sshfs") {
         core.info("get back by rsync");
-        await exec.exec("rsync -uvzrtopg  openbsd:work/ /Users/runner/work");
+        await exec.exec("rsync -uvzrtopg  " + osname + ":work/ /Users/runner/work");
       }
     }
   }
