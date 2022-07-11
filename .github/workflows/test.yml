@@ -38,4 +38,6 @@ jobs:
           uname -a
           grep -i mem /var/run/dmesg.boot
           sysctl -a | egrep -i 'hw.machine|hw.model|hw.ncpu'
+          rsync
+          curl
           echo "OK"
