@@ -79,8 +79,8 @@ async function setup(nat, mem) {
       let cmd2 = "pkg_add sshfs-fuse && sshfs -o allow_other,default_permissions runner@10.0.2.2:work /Users/runner/work";
       await execSSH(cmd2, "Setup sshfs");
     } else {
-      // let cmd2 = "pkg_add rsync-3.2.3p0-iconv";
-      // await execSSH(cmd2, "Setup rsync-3.2.3p0-iconv");
+      let cmd2 = "pkg_add rsync-3.2.3p0";
+      await execSSH(cmd2, "Setup rsync-3.2.3p0-iconv");
       await shell("rsync -auvzrtopg  --exclude _actions/vmactions/" + osname+ "-vm  /Users/runner/work/ " + osname + ":work", false);
     }
 
