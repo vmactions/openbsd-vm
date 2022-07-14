@@ -73,11 +73,10 @@ async function setup(nat, mem) {
 
     let sync = core.getInput("sync");
     if (sync == "sshfs") {
-      let cmd2 = "pkg_add sshfs-fuse && sshfs -o allow_other,default_permissions runner@10.0.2.2:work /Users/runner/work";
-      await execSSH(cmd2, "Setup sshfs");
+      core.info("Setup sshfs");
+      await shell("bash run.sh runSSHFSInVM");
     } else {
-      let cmd2 = "pkg_add rsync-3.2.3p0";
-      await execSSH(cmd2, "Setup rsync-3.2.3p0");
+      await shell("bash run.sh installRsyncInVM");
       await shell("bash run.sh rsyncToVM");
     }
 
@@ -121,9 +120,9 @@ async function main() {
   try {
     var usesh = core.getInput("usesh").toLowerCase() == "true";
     if (usesh) {
-      await execSSH("cd $GITHUB_WORKSPACE && exec sh -c '" + run +"'");
+      await execSSHSH("cd $GITHUB_WORKSPACE && (" + run +")");
     } else {
-      await execSSH("cd $GITHUB_WORKSPACE && exec \"$SHELL\" -c '" + run + "'");
+      await execSSH("cd $GITHUB_WORKSPACE && (" + run +")");
     }
   } catch (error) {
     core.setFailed(error.message);
