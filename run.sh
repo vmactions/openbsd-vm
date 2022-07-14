@@ -89,19 +89,19 @@ execSSH() {
 
 
 addNAT() {
-  $vmsh addNAT "$osname" "$@"
+  bash $vmsh addNAT "$osname" "$@"
 }
 
 setMemory() {
-  $vmsh setMemory "$osname" "$@"
+  bash $vmsh setMemory "$osname" "$@"
 }
 
 setCPU() {
-  $vmsh setCPU "$osname" "$@"
+  bash $vmsh setCPU "$osname" "$@"
 }
 
 startVM() {
-  $vmsh startVM "$osname"
+  bash $vmsh startVM "$osname"
 }
 
 
