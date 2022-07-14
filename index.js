@@ -12,6 +12,11 @@ async function execSSH(cmd, desp = "") {
   await exec.exec("bash run.sh execSSH", [], { input: cmd });
 }
 
+async function execSSHSH(cmd, desp = "") {
+  core.info(desp);
+  core.info("exec ssh: " + cmd);
+  await exec.exec("bash run.sh execSSHSH", [], { input: cmd });
+}
 
 async function shell(cmd, cdToScriptHome = true) {
   core.info("exec shell: " + cmd);
