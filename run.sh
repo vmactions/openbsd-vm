@@ -107,7 +107,7 @@ startVM() {
 
 
 rsyncToVM() {
-  $_pwd="$PWD"
+  _pwd="$PWD"
   cd "$_oldPWD"
   rsync -auvzrtopg  --exclude _actions/vmactions/$osname-vm  /Users/runner/work/  $osname:work
   cd "$_pwd"
