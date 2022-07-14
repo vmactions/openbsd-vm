@@ -11,6 +11,7 @@ _script="$0"
 _script_home="$(dirname "$_script")"
 
 
+_oldPWD="$PWD"
 #everytime we cd to the script home
 cd "$_script_home"
 
@@ -77,8 +78,45 @@ importVM() {
 
 
 
+waitForLoginTag() {
+  bash $vmsh waitForText "$osname" "$VM_LOGIN_TAG"
+}
 
 
+execSSH() {
+  ssh "$osname"
+}
+
+
+addNAT() {
+  $vmsh addNAT "$osname" "$@"
+}
+
+setMemory() {
+  $vmsh setMemory "$osname" "$@"
+}
+
+setCPU() {
+  $vmsh setCPU "$osname" "$@"
+}
+
+startVM() {
+  $vmsh startVM "$osname"
+}
+
+
+
+rsyncToVM() {
+  $_pwd="$PWD"
+  cd "$_oldPWD"
+  rsync -auvzrtopg  --exclude _actions/vmactions/$osname-vm  /Users/runner/work/  $osname:work
+  cd "$_pwd"
+}
+
+
+rsyncBackFromVM() {
+  rsync -uvzrtopg  $osname:work/ /Users/runner/work
+}
 
 
 

@@ -4,15 +4,12 @@ const fs = require("fs");
 const path = require("path");
 
 
-
-var osname = "openbsd";
-var loginTag = "OpenBSD/amd64 (openbsd";
 var workingDir = __dirname;
 
 async function execSSH(cmd, desp = "") {
   core.info(desp);
   core.info("exec ssh: " + cmd);
-  await exec.exec("ssh " + osname, [], { input: cmd });
+  await exec.exec("bash run.sh execSSH", [], { input: cmd });
 }
 
 
@@ -45,30 +42,30 @@ async function setup(nat, mem) {
           let hostPort = segs[1].trim().trim('"');
           let vmPort = segs[2].trim().trim('"');
 
-          await shell("bash vbox.sh addNAT " + osname + " " + proto + " " + hostPort + " " + vmPort);
+          await shell("bash run.sh addNAT " + proto + " " + hostPort + " " + vmPort);
 
         } else if (segs.length === 2) {
           let proto = "tcp"
           let hostPort = segs[0].trim().trim('"');
           let vmPort = segs[1].trim().trim('"');
-          await shell("bash vbox.sh addNAT " + osname + " " + proto + " " + hostPort + " " + vmPort);
+          await shell("bash run.sh addNAT " + proto + " " + hostPort + " " + vmPort);
         }
       };
     }
 
     if (mem) {
-      await shell("bash vbox.sh setMemory " + osname + " " + mem);
+      await shell("bash run.sh setMemory " + mem);
     }
 
-    await shell("bash vbox.sh setCPU " + osname + " 3");
+    await shell("bash run.sh setCPU  3");
 
-    await shell("bash vbox.sh startVM " + osname );
+    await shell("bash run.sh startVM " );
 
     core.info("First boot");
 
 
 
-    await shell("bash vbox.sh waitForText " + osname + "  '"+ loginTag +"'");
+    await shell("bash run.sh waitForLoginTag");
 
 
     let cmd1 = "mkdir -p /Users/runner/work && ln -s /Users/runner/work/  work";
@@ -81,7 +78,7 @@ async function setup(nat, mem) {
     } else {
       let cmd2 = "pkg_add rsync-3.2.3p0";
       await execSSH(cmd2, "Setup rsync-3.2.3p0");
-      await shell("rsync -auvzrtopg  --exclude _actions/vmactions/" + osname+ "-vm  /Users/runner/work/ " + osname + ":work", false);
+      await shell("bash run.sh rsyncToVM");
     }
 
     core.info("OK, Ready!");
@@ -107,6 +104,7 @@ async function main() {
 
   var envs = core.getInput("envs");
   console.log("envs:" + envs);
+
   if (envs) {
     fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), "SendEnv " + envs + "\n");
   }
@@ -114,7 +112,7 @@ async function main() {
   var prepare = core.getInput("prepare");
   if (prepare) {
     core.info("Running prepare: " + prepare);
-    await exec.exec("ssh -t " + osname, [], { input: prepare });
+    await execSSH(prepare);
   }
 
   var run = core.getInput("run");
@@ -123,9 +121,9 @@ async function main() {
   try {
     var usesh = core.getInput("usesh").toLowerCase() == "true";
     if (usesh) {
-      await exec.exec("ssh " + osname + " sh -c 'cd $GITHUB_WORKSPACE && exec sh'", [], { input: run });
+      await execSSH("cd $GITHUB_WORKSPACE && exec sh -c '" + run +"'");
     } else {
-      await exec.exec("ssh " + osname + " sh -c 'cd $GITHUB_WORKSPACE && exec \"$SHELL\"'", [], { input: run });
+      await execSSH("cd $GITHUB_WORKSPACE && exec \"$SHELL\" -c '" + run + "'");
     }
   } catch (error) {
     core.setFailed(error.message);
@@ -135,7 +133,7 @@ async function main() {
       let sync = core.getInput("sync");
       if (sync != "sshfs") {
         core.info("get back by rsync");
-        await exec.exec("rsync -uvzrtopg  " + osname + ":work/ /Users/runner/work");
+        await exec.exec("bash run.sh rsyncBackFromVM");
       }
     }
   }
