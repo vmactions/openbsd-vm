@@ -2,7 +2,7 @@
 
 set -e
 
-OVA_LINK="https://github.com/vmactions/openbsd-builder/releases/download/v0.0.4/openbsd-7.1.ova.zip"
+OVA_LINK="https://github.com/vmactions/openbsd-builder/releases/download/v0.0.5/openbsd-7.1.ova.zip"
 
 CONF_LINK="https://raw.githubusercontent.com/vmactions/openbsd-builder/v0.0.5/conf/openbsd-7.1.conf"
 
