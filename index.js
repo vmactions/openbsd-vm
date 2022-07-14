@@ -6,7 +6,7 @@ const path = require("path");
 
 
 var osname = "openbsd";
-var loginTag = "OpenBSD/amd64 (openbsd.my.domain) (tty";
+var loginTag = "OpenBSD/amd64 (openbsd";
 var workingDir = __dirname;
 
 async function execSSH(cmd, desp = "") {
