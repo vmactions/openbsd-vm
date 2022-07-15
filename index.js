@@ -98,6 +98,13 @@ async function setup(nat, mem) {
 
 
 async function main() {
+  let release = core.getInput("release");
+  core.info("release: " + release);
+  if(release) {
+    process.env.VM_RELEASE=release;
+  }
+
+
   let nat = core.getInput("nat");
   core.info("nat: " + nat);
 

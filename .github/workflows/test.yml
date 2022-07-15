@@ -5,6 +5,9 @@ on: [push]
 
 jobs:
   testfreebsd:
+    strategy:
+      matrix:
+        release: [ "", "6.9", "7.1"]
     runs-on: macos-12
     name: A job to run test OpenBSD
     env:
@@ -19,6 +22,7 @@ jobs:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: pkg_add curl
         mem: 2048
+        release: ${{ matrix.release }}
         nat: |
           "8080": "80"
           "8443": "443"

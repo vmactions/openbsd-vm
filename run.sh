@@ -2,10 +2,6 @@
 
 set -e
 
-OVA_LINK="https://github.com/vmactions/openbsd-builder/releases/download/v0.0.5/openbsd-7.1.ova.zip"
-
-CONF_LINK="https://raw.githubusercontent.com/vmactions/openbsd-builder/v0.0.5/conf/openbsd-7.1.conf"
-
 
 _script="$0"
 _script_home="$(dirname "$_script")"
@@ -16,6 +12,31 @@ _oldPWD="$PWD"
 cd "$_script_home"
 
 
+
+#find the release number
+if [ -z "$VM_RELEASE" ]; then
+  if [ ! -e "conf/default.release.conf" ]; then
+    echo "The VM_RELEASE is empty,  but the conf/default.release.conf is not found. something wrong."
+    exit 1
+  fi
+  . "conf/default.release.conf"
+  VM_RELEASE=$DEFAULT_RELEASE
+fi
+
+
+#load the release conf
+if [ ! -e "conf/$VM_RELEASE.conf" ]; then
+  echo "Can not find release conf: conf/$VM_RELEASE.conf"
+  echo "The supported release conf: "
+  ls conf/*
+  exit 1
+fi
+
+
+. conf/$VM_RELEASE.conf
+
+
+#load the vm conf
 _conf_filename="$(echo "$CONF_LINK" | rev  | cut -d / -f 1 | rev)"
 echo "Config file: $_conf_filename"
 
@@ -121,7 +142,10 @@ rsyncToVM() {
 
 
 rsyncBackFromVM() {
+  _pwd="$PWD"
+  cd "$_oldPWD"
   rsync -uvzrtopg  $osname:work/ /Users/runner/work
+  cd "$_pwd"
 }
 
 
