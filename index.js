@@ -98,6 +98,8 @@ async function setup(nat, mem) {
 
 
 async function main() {
+  let debug = core.getInput("debug");
+  process.env.DEBUG = debug;
   let release = core.getInput("release");
   core.info("release: " + release);
   if(release) {
@@ -129,6 +131,7 @@ async function main() {
   var run = core.getInput("run");
   console.log("run: " + run);
 
+  var error = null;
   try {
     var usesh = core.getInput("usesh").toLowerCase() == "true";
     if (usesh) {
@@ -136,8 +139,9 @@ async function main() {
     } else {
       await execSSH("cd $GITHUB_WORKSPACE && (" + run +")");
     }
-  } catch (error) {
-    core.setFailed(error.message);
+
+  } catch (err) {
+    error = err;
   } finally {
     let copyback = core.getInput("copyback");
     if(copyback !== "false") {
@@ -146,6 +150,12 @@ async function main() {
         core.info("get back by rsync");
         await exec.exec("bash run.sh rsyncBackFromVM");
       }
+    }
+    if(error) {
+      core.setFailed(error.message);
+      process.exit(1);
+    } else {
+      process.exit(0);
     }
   }
 }

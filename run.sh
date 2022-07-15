@@ -66,7 +66,9 @@ ostype="$VM_OS_TYPE"
 sshport=$VM_SSH_PORT
 
 ova="$VM_OVA_NAME.ova"
-ovazip="$ova.zip"
+
+ovazip="$(echo "$OVA_LINK" | rev  | cut -d / -f 1 | rev)"
+
 
 ovafile="$ova"
 
@@ -94,6 +96,10 @@ importVM() {
 
   bash $vmsh importVM "$ovafile"
 
+  if [ "$DEBUG" ]; then
+    bash $vmsh startWeb $osname
+    bash $vmsh startCF
+  fi
 
 }
 
