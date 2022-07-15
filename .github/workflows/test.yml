@@ -35,6 +35,7 @@ jobs:
           if [ "test" ]; then
             echo "test"
           fi
+          dmesg
           pwd
           ls -lah
           whoami
