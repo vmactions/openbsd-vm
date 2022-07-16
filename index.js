@@ -148,7 +148,7 @@ async function main() {
       let sync = core.getInput("sync");
       if (sync != "sshfs") {
         core.info("get back by rsync");
-        await exec.exec("bash run.sh rsyncBackFromVM");
+        await exec.exec("bash " + workingDir + "/run.sh rsyncBackFromVM");
       }
     }
     if(error) {
