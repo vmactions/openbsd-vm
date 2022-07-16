@@ -9,13 +9,13 @@ var workingDir = __dirname;
 async function execSSH(cmd, desp = "") {
   core.info(desp);
   core.info("exec ssh: " + cmd);
-  await exec.exec("bash run.sh execSSH", [], { input: cmd });
+  await exec.exec("bash " + workingDir + "/run.sh execSSH", [], { input: cmd });
 }
 
 async function execSSHSH(cmd, desp = "") {
   core.info(desp);
   core.info("exec ssh: " + cmd);
-  await exec.exec("bash run.sh execSSHSH", [], { input: cmd });
+  await exec.exec("bash " + workingDir + "/run.sh execSSHSH", [], { input: cmd });
 }
 
 async function shell(cmd, cdToScriptHome = true) {
