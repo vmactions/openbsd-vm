@@ -12,7 +12,7 @@ on:
       - 'conf/*'
 
 jobs:
-  testfreebsd:
+  test:
     strategy:
       matrix:
         release: [ "", "6.9", "7.1"]
@@ -28,7 +28,8 @@ jobs:
       uses: vmactions/openbsd-vm@main
       with:
         envs: 'MYTOKEN MYTOKEN2'
-        prepare: pkg_add curl
+        prepare: |
+          pkg_add curl
         mem: 2048
         release: ${{ matrix.release }}
         nat: |
