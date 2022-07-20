@@ -122,6 +122,8 @@ async function main() {
     fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), "SendEnv " + envs + "\n");
   }
 
+  await shell("bash run.sh onStarted" );
+
   var prepare = core.getInput("prepare");
   if (prepare) {
     core.info("Running prepare: " + prepare);
