@@ -27,7 +27,10 @@ jobs:
           view_top: 1
 
       - name: Using main branch
-        run: git switch main || (git fetch --all && git checkout -b main origin/main)
+        run: |
+          git switch main || (git fetch --all && git checkout -b main origin/main)
+          . conf/default.release.conf
+          echo "DEFAULT_RELEASE=$DEFAULT_RELEASE" >> $GITHUB_ENV
 
       - name: Update the readme.md
         uses: vmactions/render@v0.0.1

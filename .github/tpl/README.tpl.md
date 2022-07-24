@@ -124,7 +124,7 @@ The default memory of the VM is 1024MB, you can use `mem` option to set the memo
 
 
 
-It uses [the latest {{VM_NAME}} release](conf/default.release.conf) by default, you can use `release` option to use another version of {{VM_NAME}}:
+It uses [the latest {{VM_NAME}} release {{DEFAULT_RELEASE}}](conf/default.release.conf) by default, you can use `release` option to use another version of {{VM_NAME}}:
 
 ```
 ...
