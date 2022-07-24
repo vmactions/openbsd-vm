@@ -130,7 +130,7 @@ The default memory of the VM is 1024MB, you can use `mem` option to set the memo
 
 
 
-It uses [the latest OpenBSD release 7.1](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
+It uses [the latest OpenBSD 7.1](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
 
 ```
 ...
@@ -144,7 +144,7 @@ It uses [the latest OpenBSD release 7.1](conf/default.release.conf) by default, 
 ...
 ```
 
-All the supported releases are here: [conf](conf)
+All the supported releases are here: [OpenBSD  '6.9, 7.1, '](conf)
 
 
 # Under the hood
