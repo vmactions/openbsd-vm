@@ -1,0 +1,25 @@
+{
+  "name": "vmactions-OpenBSD",
+  "version": "0.0.1",
+  "description": "GitHub actions for OpenBSD",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vmactions/openbsd-vm.git"
+  },
+  "keywords": [
+    "GitHub",
+    "Actions",
+    "OpenBSD"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vmactions/openbsd-vm/issues"
+  },
+  "homepage": "https://github.com/vmactions/openbsd-vm",
+  "dependencies": {
+    "@actions/core": "^1.9.0",
+    "@actions/exec": "^1.1.1"
+  }
+}
