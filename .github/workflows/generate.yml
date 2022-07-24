@@ -1,0 +1,76 @@
+name: "Generate the project from BaseVM"
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - '.github/tpl/*'
+      - '.github/data/*'
+      - '.github/workflows/generate.yml'
+
+
+    
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with: 
+          token: ${{ secrets.VM_TOKEN }}
+      - name: Get latest release
+        id: get-latest-release
+        uses: InsonusK/get-latest-release@v1.0.1
+        with:
+          myToken: ${{ github.token }}
+          view_top: 1
+
+      - name: Using main branch
+        run: |
+          git switch main || (git fetch --all && git checkout -b main origin/main)
+          . conf/default.release.conf
+          echo "DEFAULT_RELEASE=$DEFAULT_RELEASE" >> $GITHUB_ENV
+          echo "ALL_RELEASES=$(ls conf/ | grep -v default | sed 's/.conf//g' | tr '\n' ',' | sed 's/,/", "/g')" >> $GITHUB_ENV
+
+          git clone https://github.com/vmactions/base-vm.git
+
+          [ ! -e ".github/tpl" ] && mkdir -p .github/tpl
+
+      - name: Generate files
+        uses: vmactions/render@v0.0.1
+        env:
+          LATEST_TAG: ${{ steps.get-latest-release.outputs.tag_name }}
+        with:
+          datafile: .github/data/datafile.ini
+          files: |
+            base-vm/.github/tpl/test.tpl.yml : .github/workflows/test.yml
+            base-vm/.github/tpl/README.tpl.md : .github/tpl/README.tpl.md
+            base-vm/.github/dependabot.yml : .github/dependabot.yml
+            base-vm/.github/FUNDING.yml : .github/FUNDING.yml
+            base-vm/.github/workflows/readme.yml : .github/workflows/readme.yml
+            base-vm/package.json : package.json
+            base-vm/index.js : index.js
+            base-vm/action.yml : action.yml
+            base-vm/run.sh : run.sh
+      - name: Update node_modules
+        run: |
+          [ -e "node_modules" ] && git rm -r node_modules
+          npm install --save
+          git add node_modules
+      - uses: EndBug/add-and-commit@v9
+        with:
+          message: "Generate the project"
+          pull: '--rebase --autostash '
+          add: |
+            .github/workflows/readme.yml
+            .github/workflows/test.yml
+            .github/tpl/README.tpl.md
+            .github/dependabot.yml
+            .github/FUNDING.yml
+            package.json
+            package-lock.json
+            index.js
+            action.yml
+            run.sh
+            node_modules
+
