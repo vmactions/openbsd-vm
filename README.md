@@ -144,7 +144,7 @@ It uses [the latest OpenBSD 7.1](conf/default.release.conf) by default, you can 
 ...
 ```
 
-All the supported releases are here: [OpenBSD  "6.9, 7.1, "](conf)
+All the supported releases are here: [OpenBSD  6.9, 7.1, ](conf)
 
 
 # Under the hood
