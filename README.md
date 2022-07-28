@@ -26,7 +26,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Test in OpenBSD
       id: test
-      uses: vmactions/openbsd-vm@v0.0.7
+      uses: vmactions/openbsd-vm@v0
       with:
         envs: 'MYTOKEN MYTOKEN2'
         usesh: true
@@ -77,7 +77,7 @@ The code is shared from the host to the VM via `rsync`, you can choose to use to
     - uses: actions/checkout@v2
     - name: Test
       id: test
-      uses: vmactions/openbsd-vm@v0.0.7
+      uses: vmactions/openbsd-vm@v0
       with:
         envs: 'MYTOKEN MYTOKEN2'
         usesh: true
@@ -100,7 +100,7 @@ You can add NAT port between the host and the VM.
     - uses: actions/checkout@v2
     - name: Test
       id: test
-      uses: vmactions/openbsd-vm@v0.0.7
+      uses: vmactions/openbsd-vm@v0
       with:
         envs: 'MYTOKEN MYTOKEN2'
         usesh: true
@@ -120,7 +120,7 @@ The default memory of the VM is 1024MB, you can use `mem` option to set the memo
     - uses: actions/checkout@v2
     - name: Test
       id: test
-      uses: vmactions/openbsd-vm@v0.0.7
+      uses: vmactions/openbsd-vm@v0
       with:
         envs: 'MYTOKEN MYTOKEN2'
         usesh: true
@@ -138,7 +138,7 @@ It uses [the latest OpenBSD 7.1](conf/default.release.conf) by default, you can 
     - uses: actions/checkout@v2
     - name: Test
       id: test
-      uses: vmactions/openbsd-vm@v0.0.7
+      uses: vmactions/openbsd-vm@v0
       with:
         release: 6.9
 ...
