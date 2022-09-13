@@ -195,7 +195,6 @@ $VM_INSTALL_CMD $VM_SSHFS_PKG
 EOF
     echo "Run sshfs"
     ssh "$osname" sh <<EOF
-echo 'StrictHostKeyChecking=accept-new' >.ssh/config
 
 sshfs -o allow_other,default_permissions host:work /Users/runner/work
 
@@ -207,9 +206,18 @@ EOF
 }
 
 
+#run in the vm, just as soon as the vm is up
 onStarted() {
   if [ -e "hooks/onStarted.sh" ]; then
     ssh "$osname" sh <hooks/onStarted.sh
+  fi
+}
+
+
+#run in the vm, just after the files are initialized
+onInitialized() {
+  if [ -e "hooks/onInitialized.sh" ]; then
+    ssh "$osname" sh <hooks/onInitialized.sh
   fi
 }
 
@@ -234,6 +242,13 @@ waitForBooting() {
   fi
 }
 
+
+showDebugInfo() {
+  pwd && ls -lah
+  bash -c 'pwd && ls -lah ~/.ssh/ && cat ~/.ssh/config'
+  cat $_conf_filename
+
+}
 
 "$@"
 
