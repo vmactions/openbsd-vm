@@ -28,7 +28,7 @@ jobs:
     if: ${{ !contains(github.repository, 'solaris') && !contains(github.repository, 'dragonflybsd')}}
     strategy:
       matrix:
-        release: [ "6.9", "7.1", ""]
+        release: [ "7.1", "7.2", ""]
     runs-on: macos-12
     name: A job to run test sshfs OpenBSD
     env:
@@ -59,7 +59,7 @@ jobs:
   test:
     strategy:
       matrix:
-        release: [ "6.9", "7.1", ""]
+        release: [ "7.1", "7.2", ""]
     runs-on: macos-12
     name: A job to run test OpenBSD
     env:
