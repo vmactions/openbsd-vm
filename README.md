@@ -146,7 +146,7 @@ You can add NAT port between the host and the VM.
 ```
 
 
-The default memory of the VM is 1024MB, you can use `mem` option to set the memory size:
+The default memory of the VM is 6144MB, you can use `mem` option to set the memory size:
 
 ```
 ...
@@ -158,7 +158,7 @@ The default memory of the VM is 1024MB, you can use `mem` option to set the memo
       with:
         envs: 'MYTOKEN MYTOKEN2'
         usesh: true
-        mem: 2048
+        mem: 4096
 ...
 ```
 
@@ -183,10 +183,16 @@ All the supported releases are here: [OpenBSD  7.1, 7.2](conf)
 
 # Under the hood
 
-GitHub only supports Ubuntu, Windows and MacOS out of the box.
+We use Qemu and Libvirt to run the OpenBSD VM.
 
-However, the MacOS support virtualization. It has VirtualBox installed.
 
-So, we run the OpenBSD VM in VirtualBox on MacOS.
+
+
+# Upcoming features:
+
+1. Runs on MacOS to use cpu accelaration.
+2. Support ARM and other architecture.
+
+
 
 
