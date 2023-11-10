@@ -17,7 +17,7 @@ on: [push]
 
 jobs:
   test:
-    runs-on: macos-12
+    runs-on: ubuntu-22.04
     name: A job to run test in OpenBSD
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
@@ -52,7 +52,7 @@ The latest major version is: `v0`, which is the most recommended to use. (You ca
 
 
 
-The `runs-on: macos-12` must be `macos-12`.
+The `runs-on: ubuntu-22.04` must be `ubuntu-22.04`.
 
 The `envs: 'MYTOKEN MYTOKEN2'` is the env names that you want to pass into the vm.
 
@@ -164,7 +164,7 @@ The default memory of the VM is 6144MB, you can use `mem` option to set the memo
 
 
 
-It uses [the latest OpenBSD 7.2](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
+It uses [the latest OpenBSD 7.3](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
 
 ```
 ...
@@ -174,11 +174,11 @@ It uses [the latest OpenBSD 7.2](conf/default.release.conf) by default, you can 
       id: test
       uses: vmactions/openbsd-vm@v0
       with:
-        release: 7.1
+        release: 7.3
 ...
 ```
 
-All the supported releases are here: [OpenBSD  7.1, 7.2](conf)
+All the supported releases are here: [OpenBSD  7.3](conf)
 
 
 # Under the hood
