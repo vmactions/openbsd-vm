@@ -116,7 +116,13 @@ importVM() {
 
 
 waitForLoginTag() {
-  bash $vmsh waitForText "$osname" "$VM_LOGIN_TAG"
+  if [ -e "hooks/waitForLoginTag.sh" ]; then
+    echo "Run hooks/waitForLoginTag.sh"
+    . hooks/waitForLoginTag.sh
+  else
+    bash $vmsh waitForText "$osname" "$VM_LOGIN_TAG"
+  fi
+
 }
 
 
