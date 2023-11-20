@@ -40,7 +40,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Test in OpenBSD
       id: test
-      uses: vmactions/openbsd-vm@de2094896777f20fad26cab0d13855ac0293872c
+      uses: vmactions/openbsd-vm@ae7d926f7509d20f3c12c7c2ac8558117966f7f8
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -77,7 +77,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Test in OpenBSD
       id: test
-      uses: vmactions/openbsd-vm@de2094896777f20fad26cab0d13855ac0293872c
+      uses: vmactions/openbsd-vm@ae7d926f7509d20f3c12c7c2ac8558117966f7f8
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
