@@ -23,7 +23,7 @@ jobs:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Test in OpenBSD
       id: test
       uses: vmactions/openbsd-vm@v1
@@ -78,7 +78,7 @@ The code is shared from the host to the VM via `rsync`, you can choose to use to
 ...
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Test
       id: test
       uses: vmactions/openbsd-vm@v1
@@ -105,7 +105,7 @@ When using `rsync`,  you can define `copyback: false` to not copy files back fro
 ...
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Test
       id: test
       uses: vmactions/openbsd-vm@v1
@@ -131,7 +131,7 @@ You can add NAT port between the host and the VM.
 ```
 ...
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Test
       id: test
       uses: vmactions/openbsd-vm@v1
@@ -151,7 +151,7 @@ The default memory of the VM is 6144MB, you can use `mem` option to set the memo
 ```
 ...
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Test
       id: test
       uses: vmactions/openbsd-vm@v1
@@ -169,7 +169,7 @@ It uses [the latest OpenBSD 7.3](conf/default.release.conf) by default, you can 
 ```
 ...
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Test
       id: test
       uses: vmactions/openbsd-vm@v1
