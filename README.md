@@ -48,7 +48,7 @@ jobs:
 ```
 
 
-The latest major version is: `v1`, which is the most recommended to use. (You can also use the latest full version: `v1.0.1`)  
+The latest major version is: `v1`, which is the most recommended to use. (You can also use the latest full version: `v1.0.2`)  
 
 
 
@@ -164,7 +164,7 @@ The default memory of the VM is 6144MB, you can use `mem` option to set the memo
 
 
 
-It uses [the latest OpenBSD 7.3](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
+It uses [the latest OpenBSD 7.4](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
 
 ```
 ...
@@ -178,7 +178,7 @@ It uses [the latest OpenBSD 7.3](conf/default.release.conf) by default, you can 
 ...
 ```
 
-All the supported releases are here: [OpenBSD  7.3](conf)
+All the supported releases are here: [OpenBSD  7.2, 7.3, 7.4](conf)
 
 
 # Under the hood
