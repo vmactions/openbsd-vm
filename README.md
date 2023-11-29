@@ -39,8 +39,8 @@ jobs:
           ls -lah
           whoami
           env
-          
-          
+
+
 
 
 
@@ -48,7 +48,7 @@ jobs:
 ```
 
 
-The latest major version is: `v1`, which is the most recommended to use. (You can also use the latest full version: `v1.0.2`)  
+The latest major version is: `v1`, which is the most recommended to use. (You can also use the latest full version: `v1.0.2`)
 
 
 
@@ -180,6 +180,10 @@ It uses [the latest OpenBSD 7.4](conf/default.release.conf) by default, you can 
 
 All the supported releases are here: [OpenBSD  7.2, 7.3, 7.4](conf)
 
+# Migration
+
+To migrate from v0 to v1 you'll need to change `runs-on: macos-12` to
+`runs-on: ubuntu-22.04`
 
 # Under the hood
 
