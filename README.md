@@ -178,7 +178,7 @@ It uses [the OpenBSD 7.4](conf/default.release.conf) by default, you can use `re
 ...
 ```
 
-All the supported releases are here: OpenBSD  7.2, 7.3, 7.4 [See all here](conf)
+All the supported releases are here: OpenBSD  7.2, 7.3, 7.4, test.releases [See all here](conf)
 
 
 # Under the hood
