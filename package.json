@@ -1,6 +1,6 @@
 {
   "name": "vmactions-OpenBSD",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "GitHub actions for OpenBSD",
   "main": "index.js",
   "repository": {
