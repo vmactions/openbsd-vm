@@ -174,7 +174,7 @@ It uses [the OpenBSD 7.4](conf/default.release.conf) by default, you can use `re
       id: test
       uses: vmactions/openbsd-vm@v1
       with:
-        release: 7.3
+        release: "7.3"
 ...
 ```
 
