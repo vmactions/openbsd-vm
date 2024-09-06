@@ -29,7 +29,7 @@ jobs:
     strategy:
       matrix:
         release: [ "7.3", "7.4", "7.5", ""]
-        runs: [ "ubuntu-22.04"]
+        runs: [ "ubuntu-22.04", "ubuntu-24.04", "ubuntu-latest"]
     runs-on: ${{ matrix.runs }}
     name: sshfs OpenBSD
     env:
@@ -79,7 +79,7 @@ jobs:
     strategy:
       matrix:
         release: [ "7.3", "7.4", "7.5", ""]
-        runs: [ "ubuntu-22.04"]
+        runs: [ "ubuntu-22.04", "ubuntu-24.04", "ubuntu-latest"]
     runs-on: ${{ matrix.runs }}
     name: OpenBSD
     env:
