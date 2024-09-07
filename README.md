@@ -41,7 +41,8 @@ jobs:
           env
           sysctl hw.model
           sysctl hw.ncpu
-          
+          sysctl hw.physmem
+          sysctl hw.usermem
           
 
 
