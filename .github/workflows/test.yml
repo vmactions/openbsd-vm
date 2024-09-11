@@ -52,7 +52,6 @@ jobs:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
           pkg_add curl
-        mem: 2048
         release: ${{ matrix.release }}
         nat: |
           "10022": "22"
@@ -69,6 +68,17 @@ jobs:
             exit 1
           fi
           echo "TEST_ENV=abc" >>${GITHUB_ENV}
+
+          pwd
+          ls -lah
+          whoami
+          env
+          sysctl hw.model
+          sysctl hw.ncpu
+          sysctl hw.physmem
+          sysctl hw.usermem
+          
+
     - name: Test NAT
       run:
         echo "TEST_ENV=$TEST_ENV"
@@ -95,7 +105,7 @@ jobs:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
           pkg_add curl
-        mem: 2048
+        mem: 4096
         release: ${{ matrix.release }}
         nat: |
           "10022": "22"
