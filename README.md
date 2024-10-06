@@ -213,15 +213,15 @@ Support custom shell:
       id: vm
       uses: vmactions/openbsd-vm@v1
     - name: Custom shell step 1
-	  shell: openbsd {0}
-	  run: |
-	    cd $GITHUB_WORKSPACE;
+      shell: openbsd {0}
+      run: |
+        cd $GITHUB_WORKSPACE;
         pwd
         echo "this is step 1, running inside the VM"
     - name: Custom shell step 2
-	  shell: openbsd {0}
-	  run: |
-	    cd $GITHUB_WORKSPACE;
+      shell: openbsd {0}
+      run: |
+        cd $GITHUB_WORKSPACE;
         pwd
         echo "this is step 2, running inside the VM"
 ...
