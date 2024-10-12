@@ -51,7 +51,7 @@ jobs:
 ```
 
 
-The latest major version is: `v1`, which is the most recommended to use. (You can also use the latest full version: `v1.1.3`)  
+The latest major version is: `v1`, which is the most recommended to use. (You can also use the latest full version: `v1.1.4`)  
 
 
 If you are migrating from the previous `v0`, please change the `runs-on: ` to `runs-on: ubuntu-latest`
@@ -194,7 +194,7 @@ The VM is using all the cpu cores of the host by default, you can use `cpu` opti
 
 ## 5. Select release
 
-It uses [the OpenBSD 7.5](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
+It uses [the OpenBSD 7.6](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
 
 ```
 ...
@@ -208,7 +208,7 @@ It uses [the OpenBSD 7.5](conf/default.release.conf) by default, you can use `re
 ...
 ```
 
-All the supported releases are here: OpenBSD  7.2, 7.3, 7.4, 7.5, test.releases [See all here](conf)
+All the supported releases are here: OpenBSD  7.2, 7.3, 7.4, 7.5, 7.6, test.releases [See all here](conf)
 
 
 
