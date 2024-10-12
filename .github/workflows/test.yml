@@ -28,7 +28,7 @@ jobs:
     if: ${{ !contains(github.repository, 'solaris') && !contains(github.repository, 'dragonflybsd') && !contains(github.repository, 'omnios')}}
     strategy:
       matrix:
-        release: [ "7.3", "7.4", "7.5", ""]
+        release: [ "7.3", "7.4", "7.5", "7.6", ""]
         runs: [ "ubuntu-22.04", "ubuntu-24.04", "ubuntu-latest"]
     runs-on: ${{ matrix.runs }}
     name: sshfs OpenBSD
@@ -47,7 +47,7 @@ jobs:
         port: 8000
     - name: Test in OpenBSD
       id: test
-      uses: vmactions/openbsd-vm@568abf139bcd5bcb768ba1e0f496ce6d88ef1a5e
+      uses: vmactions/openbsd-vm@0fdb1b7aa8d1376a48258d4f8d5e7e6330d44772
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -105,7 +105,7 @@ jobs:
   test:
     strategy:
       matrix:
-        release: [ "7.3", "7.4", "7.5", ""]
+        release: [ "7.3", "7.4", "7.5", "7.6", ""]
         runs: [ "ubuntu-22.04", "ubuntu-24.04", "ubuntu-latest"]
     runs-on: ${{ matrix.runs }}
     name: OpenBSD
@@ -117,7 +117,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Test in OpenBSD
       id: test
-      uses: vmactions/openbsd-vm@568abf139bcd5bcb768ba1e0f496ce6d88ef1a5e
+      uses: vmactions/openbsd-vm@0fdb1b7aa8d1376a48258d4f8d5e7e6330d44772
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
