@@ -1,1 +1,1 @@
-mount -t nfs -o -T 192.168.122.1:$RUNNER_HOME/work $RUNNER_HOME/work
+mount -t nfs -o -T 192.168.122.1:$RUNNER_HOME/work $HOME/work
