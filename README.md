@@ -77,7 +77,7 @@ The default shell in OpenBSD is `ksh`, if you want to use `sh` to execute the `r
 
 ## 2. Share code
 
-The code is shared from the host to the VM via `rsync` by default, you can choose to use to `sshfs` share code instead.
+The code is shared from the host to the VM via `rsync` by default, you can choose to use `sshfs` or `nfs` share code instead.
 
 
 ```
@@ -92,7 +92,7 @@ The code is shared from the host to the VM via `rsync` by default, you can choos
       with:
         envs: 'MYTOKEN MYTOKEN2'
         usesh: true
-        sync: sshfs
+        sync: sshfs  # or: nfs
         prepare: |
           pkg_add curl
 
