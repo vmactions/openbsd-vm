@@ -47,7 +47,7 @@ jobs:
         port: 8000
     - name: Test in OpenBSD
       id: test
-      uses: vmactions/openbsd-vm@03711676ad8d4d5f7327d12f9543b54b4cdc4e32
+      uses: vmactions/openbsd-vm@9ac07038010324f1bad6c7da16773e4b9a84ef43
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -123,7 +123,7 @@ jobs:
         port: 8000
     - name: Test in OpenBSD
       id: test
-      uses: vmactions/openbsd-vm@03711676ad8d4d5f7327d12f9543b54b4cdc4e32
+      uses: vmactions/openbsd-vm@9ac07038010324f1bad6c7da16773e4b9a84ef43
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -193,7 +193,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Test in OpenBSD
       id: test
-      uses: vmactions/openbsd-vm@03711676ad8d4d5f7327d12f9543b54b4cdc4e32
+      uses: vmactions/openbsd-vm@9ac07038010324f1bad6c7da16773e4b9a84ef43
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
