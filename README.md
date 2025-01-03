@@ -5,6 +5,23 @@ Use this action to run your CI in OpenBSD.
 The github workflow only supports Ubuntu, Windows and MacOS. But what if you need to use OpenBSD?
 
 
+All the supported releases are here:
+
+
+
+| Release | x86_64  | aarch64 |
+|---------|---------|---------|
+| 7.3     |  ✅     | ✅   |
+| 7.4     |  ✅     | ✅   |
+| 7.5     |  ✅     | ✅   |
+| 7.6     |  ✅     | ✅   |
+
+
+
+
+
+
+
 
 
 ## 1. Example: `test.yml`:
@@ -225,23 +242,6 @@ The vm is using x86_64(AMD64) by default, but you can use `arch` option to chang
         arch: aarch64
 ...
 ```
-
-
-All the supported releases are here:
-
-
-
-| Release | x86_64  | aarch64 |
-|---------|---------|---------|
-| 7.3     |  ✅     | ✅   |
-| 7.4     |  ✅     | ✅   |
-| 7.5     |  ✅     | ✅   |
-| 7.6     |  ✅     | ✅   |
-
-
-
-
-
 
 
 
