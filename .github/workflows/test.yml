@@ -29,7 +29,9 @@ jobs:
     strategy:
       matrix:
         release: [ "7.3", "7.4", "7.5", "7.6", ""]
+        arch: [ "aarch64", ""]
         runs: [ "ubuntu-24.04"]
+
     runs-on: ${{ matrix.runs }}
     name: sshfs OpenBSD
     env:
@@ -39,13 +41,34 @@ jobs:
       DEBUG: 1
     steps:
     - uses: actions/checkout@v4
+    - name: Check arch
+      id: check
+      run: |
+        if [ -z "${{ matrix.release }}" ]; then
+          #ok, go ahead
+          echo "release is empty"
+          echo "run=true" >> $GITHUB_OUTPUT
+        elif [ -z "${{ matrix.arch }}" ]; then
+          #ok, go ahead
+          echo "arch is empty"
+          echo "run=true" >> $GITHUB_OUTPUT
+        elif [ -e "conf/${{ matrix.release }}-${{ matrix.arch }}.conf" ]; then
+          #ok, go ahead
+          echo "conf exists: conf/${{ matrix.release }}-${{ matrix.arch }}.conf"
+          echo "run=true" >> $GITHUB_OUTPUT
+        else
+          echo "The release ${{ matrix.release }} doesn't support ${{ matrix.arch }}, skip."
+          echo "run=false" >> $GITHUB_OUTPUT
+        fi
     - name: Creating Web console
+      if: ${{ steps.check.outputs.run == 'true' }}
       uses: vmactions/cf-tunnel@v0
       id: tunnel
       with:
         protocol: http
         port: 8000
     - name: Test in OpenBSD
+      if: ${{ steps.check.outputs.run == 'true' }}
       id: test
       uses: vmactions/openbsd-vm@91f5e623a6c80d75601b4abbeda4fe49fd2bfc99
       with:
@@ -53,6 +76,7 @@ jobs:
         prepare: |
           pkg_add curl
         release: ${{ matrix.release }}
+        arch: ${{ matrix.arch }}
         nat: |
           "10022": "22"
           "8080": "80"
@@ -80,11 +104,13 @@ jobs:
           
 
     - name: Test NAT
+      if: ${{ steps.check.outputs.run == 'true' }}
       run:
         echo "TEST_ENV=$TEST_ENV"
         [ "$TEST_ENV" = "abc" ]
         ssh -vvv -p 10022 -i $HOME/.ssh/host.id_rsa root@localhost "uname -a;whoami;pwd"
     - name: Test custom shell
+      if: ${{ steps.check.outputs.run == 'true' }}
       shell: openbsd {0}
       run: |
         pwd
@@ -101,10 +127,16 @@ jobs:
           sysctl hw.usermem
           
 
+
+
+
+
+
   testnfs:
     strategy:
       matrix:
         release: [ "7.3", "7.4", "7.5", "7.6", ""]
+        arch: [ "aarch64", ""]
         runs: [ "ubuntu-24.04"]
     runs-on: ${{ matrix.runs }}
     name: nfs OpenBSD
@@ -115,13 +147,34 @@ jobs:
       DEBUG: 1
     steps:
     - uses: actions/checkout@v4
+    - name: Check arch
+      id: check
+      run: |
+        if [ -z "${{ matrix.release }}" ]; then
+          #ok, go ahead
+          echo "release is empty"
+          echo "run=true" >> $GITHUB_OUTPUT
+        elif [ -z "${{ matrix.arch }}" ]; then
+          #ok, go ahead
+          echo "arch is empty"
+          echo "run=true" >> $GITHUB_OUTPUT
+        elif [ -e "conf/${{ matrix.release }}-${{ matrix.arch }}.conf" ]; then
+          #ok, go ahead
+          echo "conf exists: conf/${{ matrix.release }}-${{ matrix.arch }}.conf"
+          echo "run=true" >> $GITHUB_OUTPUT
+        else
+          echo "The release ${{ matrix.release }} doesn't support ${{ matrix.arch }}, skip."
+          echo "run=false" >> $GITHUB_OUTPUT
+        fi
     - name: Creating Web console
+      if: ${{ steps.check.outputs.run == 'true' }}
       uses: vmactions/cf-tunnel@v0
       id: tunnel
       with:
         protocol: http
         port: 8000
     - name: Test in OpenBSD
+      if: ${{ steps.check.outputs.run == 'true' }}
       id: test
       uses: vmactions/openbsd-vm@91f5e623a6c80d75601b4abbeda4fe49fd2bfc99
       with:
@@ -129,6 +182,7 @@ jobs:
         prepare: |
           pkg_add curl
         release: ${{ matrix.release }}
+        arch: ${{ matrix.arch }}
         nat: |
           "10022": "22"
           "8080": "80"
@@ -156,11 +210,13 @@ jobs:
           
 
     - name: Test NAT
+      if: ${{ steps.check.outputs.run == 'true' }}
       run:
         echo "TEST_ENV=$TEST_ENV"
         [ "$TEST_ENV" = "abc" ]
         ssh -vvv -p 10022 -i $HOME/.ssh/host.id_rsa root@localhost "uname -a;whoami;pwd"
     - name: Test custom shell
+      if: ${{ steps.check.outputs.run == 'true' }}
       shell: openbsd {0}
       run: |
         pwd
@@ -178,10 +234,15 @@ jobs:
           
 
 
+
+
+
+
   test:
     strategy:
       matrix:
         release: [ "7.3", "7.4", "7.5", "7.6", ""]
+        arch: [ "aarch64", ""]
         runs: [ "ubuntu-24.04"]
     runs-on: ${{ matrix.runs }}
     name: OpenBSD
@@ -191,7 +252,27 @@ jobs:
       SEC_VBOX : ${{ secrets.SEC_VBOX }}
     steps:
     - uses: actions/checkout@v4
+    - name: Check arch
+      id: check
+      run: |
+        if [ -z "${{ matrix.release }}" ]; then
+          #ok, go ahead
+          echo "release is empty"
+          echo "run=true" >> $GITHUB_OUTPUT
+        elif [ -z "${{ matrix.arch }}" ]; then
+          #ok, go ahead
+          echo "arch is empty"
+          echo "run=true" >> $GITHUB_OUTPUT
+        elif [ -e "conf/${{ matrix.release }}-${{ matrix.arch }}.conf" ]; then
+          #ok, go ahead
+          echo "conf exists: conf/${{ matrix.release }}-${{ matrix.arch }}.conf"
+          echo "run=true" >> $GITHUB_OUTPUT
+        else
+          echo "The release ${{ matrix.release }} doesn't support ${{ matrix.arch }}, skip."
+          echo "run=false" >> $GITHUB_OUTPUT
+        fi
     - name: Test in OpenBSD
+      if: ${{ steps.check.outputs.run == 'true' }}
       id: test
       uses: vmactions/openbsd-vm@91f5e623a6c80d75601b4abbeda4fe49fd2bfc99
       with:
@@ -200,6 +281,7 @@ jobs:
           pkg_add curl
         mem: 4096
         release: ${{ matrix.release }}
+        arch: ${{ matrix.arch }}
         nat: |
           "10022": "22"
           "8080": "80"
@@ -219,12 +301,14 @@ jobs:
           sysctl hw.usermem
           
     - name: Test NAT
+      if: ${{ steps.check.outputs.run == 'true' }}
       run:
         echo "TEST_ENV=$TEST_ENV"
         [ "$TEST_ENV" = "abc" ]
         ssh -vvv -p 10022 -i $HOME/.ssh/host.id_rsa root@localhost "uname -a;whoami;pwd"
 
     - name: Test custom shell
+      if: ${{ steps.check.outputs.run == 'true' }}
       shell: openbsd {0}
       run: |
         pwd

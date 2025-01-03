@@ -10,6 +10,9 @@ inputs:
   release:
     description: 'The release version of OpenBSD vm'
     required: false
+  arch:
+    description: 'The cpu architecture of OpenBSD vm'
+    required: false
   envs:
     description: 'The envs to pass into OpenBSD vm'
     required: false

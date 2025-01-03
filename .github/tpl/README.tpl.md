@@ -68,7 +68,7 @@ So, you will have the same directory and same default env variables when you `ru
 
 ## 2. Share code
 
-The code is shared from the host to the VM via `rsync` by default, you can choose to use `sshfs` or `nfs` share code instead.
+The code is shared from the host to the VM via `rsync` by default, you can choose to use `sshfs` or `nfs` to share code instead.
 
 
 ```
@@ -199,11 +199,33 @@ It uses [the {{VM_NAME}} {{DEFAULT_RELEASE}}](conf/default.release.conf) by defa
 ...
 ```
 
-All the supported releases are here: {{VM_NAME}}  {{ALL_RELEASES}} [See all here](conf)
+
+## 6. Select architecture
+
+The vm is using x86_64(AMD64) by default, but you can use `arch` option to change the architecture:
+
+```
+...
+    steps:
+    - uses: actions/checkout@v4
+    - name: Test
+      id: test
+      uses: {{GITHUB_REPOSITORY}}@{{LATEST_MAJOR}}
+      with:
+        release: "{{VM_SET_RELEASE}}"
+        arch: aarch64
+...
+```
+
+
+All the supported releases are here:
+
+{{RELEASE_TABLE}}
 
 
 
-## 6. Custom shell
+
+## 7. Custom shell
 
 Support custom shell:
 
@@ -242,8 +264,10 @@ We use Qemu and Libvirt to run the {{VM_NAME}} VM.
 
 # Upcoming features:
 
-1. Runs on MacOS to use cpu accelaration.
-2. Support ARM and other architecture.
+1. Support other architectures.
+
+
+
 
 
 
