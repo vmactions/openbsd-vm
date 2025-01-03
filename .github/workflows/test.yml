@@ -77,7 +77,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@3e693922a4c8ee045152f61c2e197d41aa615c36
+      uses: vmactions/openbsd-vm@ccd17e9368ca54925ef6863cf796c0420497a9ad
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -190,7 +190,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@3e693922a4c8ee045152f61c2e197d41aa615c36
+      uses: vmactions/openbsd-vm@ccd17e9368ca54925ef6863cf796c0420497a9ad
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -295,7 +295,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@3e693922a4c8ee045152f61c2e197d41aa615c36
+      uses: vmactions/openbsd-vm@ccd17e9368ca54925ef6863cf796c0420497a9ad
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
