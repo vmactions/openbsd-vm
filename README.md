@@ -77,7 +77,7 @@ The default shell in OpenBSD is `ksh`, if you want to use `sh` to execute the `r
 
 ## 2. Share code
 
-The code is shared from the host to the VM via `rsync` by default, you can choose to use `sshfs` or `nfs` share code instead.
+The code is shared from the host to the VM via `rsync` by default, you can choose to use `sshfs` or `nfs` to share code instead.
 
 
 ```
@@ -208,11 +208,33 @@ It uses [the OpenBSD 7.6](conf/default.release.conf) by default, you can use `re
 ...
 ```
 
-All the supported releases are here: OpenBSD  7.2, 7.3, 7.4, 7.5, 7.6, test.releases [See all here](conf)
+
+## 6. Select architecture
+
+The vm is using x86_64(AMD64) by default, but you can use `arch` option to change the architecture:
+
+```
+...
+    steps:
+    - uses: actions/checkout@v4
+    - name: Test
+      id: test
+      uses: vmactions/openbsd-vm@v1
+      with:
+        release: "7.3"
+        arch: aarch64
+...
+```
+
+
+All the supported releases are here:
+
+{{RELEASE_TABLE}}
 
 
 
-## 6. Custom shell
+
+## 7. Custom shell
 
 Support custom shell:
 
@@ -251,8 +273,10 @@ We use Qemu and Libvirt to run the OpenBSD VM.
 
 # Upcoming features:
 
-1. Runs on MacOS to use cpu accelaration.
-2. Support ARM and other architecture.
+1. Support other architectures.
+
+
+
 
 
 
