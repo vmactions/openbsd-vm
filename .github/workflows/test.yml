@@ -27,6 +27,7 @@ jobs:
   testsshfs:
     if: ${{ !contains(github.repository, 'solaris') && !contains(github.repository, 'dragonflybsd') && !contains(github.repository, 'omnios')}}
     strategy:
+      fail-fast: false
       matrix:
         release: [ "7.3", "7.4", "7.5", "7.6", ""]
         arch: [ "aarch64", ""]
@@ -141,6 +142,7 @@ jobs:
 
   testnfs:
     strategy:
+      fail-fast: false
       matrix:
         release: [ "7.3", "7.4", "7.5", "7.6", ""]
         arch: [ "aarch64", ""]
@@ -254,6 +256,7 @@ jobs:
 
   test:
     strategy:
+      fail-fast: false
       matrix:
         release: [ "7.3", "7.4", "7.5", "7.6", ""]
         arch: [ "aarch64", ""]
