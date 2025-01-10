@@ -258,7 +258,7 @@ Support custom shell:
       id: vm
       uses: vmactions/openbsd-vm@v1
       with:
-        sync: sshfs
+        sync: nfs
     - name: Custom shell step 1
       shell: openbsd {0}
       run: |
