@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [ "7.3", "7.4", "7.5", "7.6", ""]
+        release: [ "7.3", "7.4", "7.5", "7.6", "7.7", ""]
         arch: [ "aarch64", ""]
         runs: [ "ubuntu-24.04"]
 
@@ -78,7 +78,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@d17a3b9ba99fb788ab4f245e9cb02ebd0b43353d
+      uses: vmactions/openbsd-vm@1bf8d90103c6a9ed66c1dc41dbacedee0c06b9f2
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -145,7 +145,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [ "7.3", "7.4", "7.5", "7.6", ""]
+        release: [ "7.3", "7.4", "7.5", "7.6", "7.7", ""]
         arch: [ "aarch64", ""]
         runs: [ "ubuntu-24.04"]
     runs-on: ${{ matrix.runs }}
@@ -193,7 +193,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@d17a3b9ba99fb788ab4f245e9cb02ebd0b43353d
+      uses: vmactions/openbsd-vm@1bf8d90103c6a9ed66c1dc41dbacedee0c06b9f2
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -260,7 +260,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [ "7.3", "7.4", "7.5", "7.6", ""]
+        release: [ "7.3", "7.4", "7.5", "7.6", "7.7", ""]
         arch: [ "aarch64", ""]
         runs: [ "ubuntu-24.04"]
     runs-on: ${{ matrix.runs }}
@@ -300,7 +300,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@d17a3b9ba99fb788ab4f245e9cb02ebd0b43353d
+      uses: vmactions/openbsd-vm@1bf8d90103c6a9ed66c1dc41dbacedee0c06b9f2
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
