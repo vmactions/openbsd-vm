@@ -32,6 +32,9 @@ jobs:
         release: [ "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", ""]
         arch: [ "aarch64", ""]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
+        exclude:
+          - runs: "ubuntu-24.04-arm"
+            arch: ""
 
     runs-on: ${{ matrix.runs }}
     name: sshfs OpenBSD
@@ -148,6 +151,10 @@ jobs:
         release: [ "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", ""]
         arch: [ "aarch64", ""]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
+        exclude:
+          - runs: "ubuntu-24.04-arm"
+            arch: ""
+
     runs-on: ${{ matrix.runs }}
     name: nfs OpenBSD
     env:
@@ -263,6 +270,10 @@ jobs:
         release: [ "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", ""]
         arch: [ "aarch64", ""]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
+        exclude:
+          - runs: "ubuntu-24.04-arm"
+            arch: ""
+
     runs-on: ${{ matrix.runs }}
     name: OpenBSD
     env:
