@@ -66,9 +66,14 @@ jobs:
           echo "arch is empty"
           echo "run=true" >> $GITHUB_OUTPUT
         elif [ -e "conf/${_release}-${_arch}.conf" ]; then
-          #ok, go ahead
           echo "conf exists: conf/${_release}-${_arch}.conf"
-          echo "run=true" >> $GITHUB_OUTPUT
+          #ok, go ahead
+          if [[ "$(echo "OpenBSD" | tr '[:upper:]' '[:lower:]')-${_arch}" == "freebsd-riscv64" ]]; then
+            echo "The OpenBSD-${_arch} doesn't support sshfs, skip."
+            echo "run=false" >> $GITHUB_OUTPUT
+          else
+            echo "run=true" >> $GITHUB_OUTPUT
+          fi
         else
           echo "The release ${_release} doesn't support ${_arch}, skip."
           echo "run=false" >> $GITHUB_OUTPUT
@@ -189,7 +194,12 @@ jobs:
         elif [ -e "conf/${_release}-${_arch}.conf" ]; then
           #ok, go ahead
           echo "conf exists: conf/${_release}-${_arch}.conf"
-          echo "run=true" >> $GITHUB_OUTPUT
+          if [[ "$(echo "OpenBSD" | tr '[:upper:]' '[:lower:]')-${_arch}" == "freebsd-riscv64" ]]; then
+            echo "The OpenBSD-${_arch} doesn't support nfs, skip."
+            echo "run=false" >> $GITHUB_OUTPUT
+          else
+            echo "run=true" >> $GITHUB_OUTPUT
+          fi
         else
           echo "The release ${_release} doesn't support ${_arch}, skip."
           echo "run=false" >> $GITHUB_OUTPUT
@@ -428,7 +438,12 @@ jobs:
         elif [ -e "conf/${_release}-${_arch}.conf" ]; then
           #ok, go ahead
           echo "conf exists: conf/${_release}-${_arch}.conf"
-          echo "run=true" >> $GITHUB_OUTPUT
+          if [[ "$(echo "OpenBSD" | tr '[:upper:]' '[:lower:]')-${_arch}" == "freebsd-riscv64" ]]; then
+            echo "The OpenBSD-${_arch} doesn't support rsync, skip."
+            echo "run=false" >> $GITHUB_OUTPUT
+          else
+            echo "run=true" >> $GITHUB_OUTPUT
+          fi
         else
           echo "The release ${_release} doesn't support ${_arch}, skip."
           echo "run=false" >> $GITHUB_OUTPUT
