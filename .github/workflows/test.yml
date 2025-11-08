@@ -41,7 +41,7 @@ jobs:
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
-      SEC_VBOX : ${{ secrets.SEC_VBOX }}
+      SEC_VBOX : ${{ vars.SEC_VBOX }}
       DEBUG: 1
     steps:
     - uses: actions/checkout@v4
@@ -81,7 +81,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@d4961480514abc6a0fe31d68a6d9e2f74ba4ef97
+      uses: vmactions/openbsd-vm@741c6b6d3b59fbb8973a82baa249fcd51f7bb0e1
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -160,7 +160,7 @@ jobs:
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
-      SEC_VBOX : ${{ secrets.SEC_VBOX }}
+      SEC_VBOX : ${{ vars.SEC_VBOX }}
       DEBUG: 1
     steps:
     - uses: actions/checkout@v4
@@ -200,7 +200,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@d4961480514abc6a0fe31d68a6d9e2f74ba4ef97
+      uses: vmactions/openbsd-vm@741c6b6d3b59fbb8973a82baa249fcd51f7bb0e1
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -279,7 +279,7 @@ jobs:
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
-      SEC_VBOX : ${{ secrets.SEC_VBOX }}
+      SEC_VBOX : ${{ vars.SEC_VBOX }}
     steps:
     - uses: actions/checkout@v4
     - name: Check arch
@@ -311,7 +311,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@d4961480514abc6a0fe31d68a6d9e2f74ba4ef97
+      uses: vmactions/openbsd-vm@741c6b6d3b59fbb8973a82baa249fcd51f7bb0e1
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
