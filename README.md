@@ -152,7 +152,7 @@ When using `rsync` or `scp`,  you can define `copyback: false` to not copy files
 ```
 
 
-{{VM_SYNC_COMMENTS}}
+
 
 
 ## 3. NAT from host runner to the VM
@@ -256,7 +256,7 @@ When you run with `aarch64`, the host runner should still be the normal `x86_64`
 
 It's not recommended to use `ubuntu-24.04-arm` as runner, it's much more slower.
 
-{{VM_ARCH_COMMENTS}}
+
 
 ## 7. Custom shell
 
