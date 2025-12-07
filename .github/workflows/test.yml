@@ -125,7 +125,8 @@ jobs:
 
     - name: Test NAT
       if: ${{ steps.check.outputs.run == 'true' }}
-      run:
+      run: |
+        set -e
         echo "TEST_ENV=$TEST_ENV"
         [ "$TEST_ENV" = "abc" ]
         ssh -vvv -p 10022 -i $HOME/.ssh/host.id_rsa root@localhost "uname -a;whoami;pwd"
@@ -252,7 +253,8 @@ jobs:
 
     - name: Test NAT
       if: ${{ steps.check.outputs.run == 'true' }}
-      run:
+      run: |
+        set -e
         echo "TEST_ENV=$TEST_ENV"
         [ "$TEST_ENV" = "abc" ]
         ssh -vvv -p 10022 -i $HOME/.ssh/host.id_rsa root@localhost "uname -a;whoami;pwd"
@@ -360,6 +362,7 @@ jobs:
           fi
           env
           echo "TEST_ENV=abc" >>${GITHUB_ENV}
+          echo "textfromvm" >$GITHUB_WORKSPACE/vm.txt
 
           pwd
           ls -lah
@@ -371,29 +374,19 @@ jobs:
           sysctl hw.usermem
           
 
-    - name: Test NAT
+    - name: Test files
       if: ${{ steps.check.outputs.run == 'true' }}
-      run:
-        echo "TEST_ENV=$TEST_ENV"
-        [ "$TEST_ENV" = "abc" ]
-        ssh -vvv -p 10022 -i $HOME/.ssh/host.id_rsa root@localhost "uname -a;whoami;pwd"
-    - name: Test custom shell
-      if: ${{ steps.check.outputs.run == 'true' }}
-      shell: openbsd {0}
       run: |
-        pwd
-        cd $GITHUB_WORKSPACE;
-        pwd
+        set -e
+        [ -e "$GITHUB_WORKSPACE/vm.txt" ];
+        cat "$GITHUB_WORKSPACE/vm.txt";
+        grep "textfromvm" $GITHUB_WORKSPACE/vm.txt;
+        cat ${GITHUB_ENV}
+        echo "TEST_ENV=$TEST_ENV";
+        [ "$TEST_ENV" = "abc" ];
+        
 
-          pwd
-          ls -lah
-          whoami
-          env
-          sysctl hw.model
-          sysctl hw.ncpu
-          sysctl hw.physmem
-          sysctl hw.usermem
-          
+
 
 
 
@@ -485,7 +478,8 @@ jobs:
           
     - name: Test NAT
       if: ${{ steps.check.outputs.run == 'true' }}
-      run:
+      run: |
+        set -e
         echo "TEST_ENV=$TEST_ENV"
         [ "$TEST_ENV" = "abc" ]
         ssh -vvv -p 10022 -i $HOME/.ssh/host.id_rsa root@localhost "uname -a;whoami;pwd"

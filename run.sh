@@ -257,7 +257,7 @@ startVM() {
 scpToVM() {
     local target_host="$osname"
     local src_dir="$HOME/work"
-    local dest_dir="work"
+    local dest_dir="$HOME/work"
 
 
     echo "==> Ensuring $target_host:$dest_dir exists..."
@@ -285,7 +285,7 @@ EOF
 
 scpBackFromVM() {
     local target_host="$osname"
-    local remote_dir="work"
+    local remote_dir="$HOME/work"
     local local_dir="$HOME/work"
 
     echo "==> Ensuring local directory $local_dir exists..."
@@ -293,15 +293,15 @@ scpBackFromVM() {
 
     echo "==> Downloading files from $target_host:$remote_dir to $local_dir ..."
 
-    ssh -o MACs=umac-64-etm@openssh.com "$target_host" "find $remote_dir -mindepth 1" | \
+    ssh "$target_host" "find $remote_dir -mindepth 1 -name .git -prune -o -print" | \
     while read -r item; do
         relative_path="${item#$remote_dir/}"
         local_target="$local_dir/$relative_path"
 
-        if ssh -o MACs=umac-64-etm@openssh.com -O "$target_host" "[ -d \"$item\" ]"; then
+        if ssh "$target_host" "[ -d \"$item\" ]"; then
             mkdir -p "$local_target"
         else
-            scp -p -r -O -o MACs=umac-64-etm@openssh.com "$target_host:$item" "$local_target"
+            scp -p -r -O "$target_host:$item" "$local_target"
         fi
     done
 
