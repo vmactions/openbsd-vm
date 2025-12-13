@@ -120,12 +120,22 @@ async function execSSH(cmd, sshConfig, ignoreReturn = false) {
 async function install() {
   core.info("Installing dependencies...");
   if (process.platform === 'linux') {
-    await exec.exec("sudo", ["apt-get", "update"], { silent: true });
-    await exec.exec("sudo", ["apt-get", "install", "-y", "qemu-system-x86", "qemu-system-arm", "qemu-utils"], { silent: true });
+    await exec.exec("sudo", ["apt-get", "update"]);
+    await exec.exec("sudo", ["apt-get", "install", "-y"
+      , "qemu-system-x86"
+      , "qemu-system-arm"
+      , "qemu-efi-aarch64"
+      , " nfs-kernel-server"
+      , "rsync"
+      , "zstd"
+      , "ovmf"
+      , "xz-utils"
+      , "qemu-utils"]);
+    await exec.exec("sudo", ["chmod", "666", "/dev/kvm"]);
   } else if (process.platform === 'darwin') {
-    await exec.exec("brew", ["install", "qemu"], { silent: true });
+    await exec.exec("brew", ["install", "qemu"]);
   } else if (process.platform === 'win32') {
-    await exec.exec("choco", ["install", "qemu", "-y"], { silent: true });
+    await exec.exec("choco", ["install", "qemu", "-y"]);
   }
 }
 
@@ -200,7 +210,13 @@ async function main() {
     // 4. Start VM
     // Params mapping:
     // anyvm.py --os <os> --release <release> --builder <builder> ... -d
-    let args = ["anyvm.py", "--os", osName, "--release", release];
+    let args = [anyvmPath, "--os", osName, "--release", release];
+
+    const datadir = path.join(__dirname, 'output');
+    if (!fs.existsSync(datadir)) {
+      fs.mkdirSync(datadir, { recursive: true });
+    }
+    args.push("--data-dir", datadir);
 
     if (builderVersion) {
       args.push("--builder", builderVersion);
