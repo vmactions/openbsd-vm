@@ -106,7 +106,7 @@ async function execSSH(cmd, sshConfig, ignoreReturn = false) {
   ];
 
   // We assume the Host is the OS name (e.g. 'openbsd'), configured in ~/.ssh/config or by anyvm.py
-  const host = sshConfig.host || "default";
+  const host = sshConfig.host;
 
   try {
     await exec.exec("ssh", [...args, host, cmd]);
@@ -131,7 +131,9 @@ async function install() {
       , "ovmf"
       , "xz-utils"
       , "qemu-utils"]);
-    await exec.exec("sudo", ["chmod", "666", "/dev/kvm"]);
+    if (fs.existsSync('/dev/kvm')) {
+      await exec.exec("sudo", ["chmod", "666", "/dev/kvm"]);
+    }
   } else if (process.platform === 'darwin') {
     await exec.exec("brew", ["install", "qemu"]);
   } else if (process.platform === 'win32') {
@@ -186,7 +188,7 @@ async function main() {
     const envs = core.getInput("envs");
     const prepare = core.getInput("prepare");
     const run = core.getInput("run");
-    const sync = core.getInput("sync").toLowerCase();
+    const sync = core.getInput("sync").toLowerCase() || 'rsync';
     const copyback = core.getInput("copyback").toLowerCase();
 
     // 2. Load Config
@@ -263,7 +265,16 @@ async function main() {
       args.push("--mem", mem);
     }
     if (nat) {
-      args.push("-p", nat.replace(/\s/g, ''));
+      const natLines = nat.split('\n');
+      for (const line of natLines) {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          continue;
+        }
+        // Remove quotes and spaces from the line: "8080": "80" -> 8080:80
+        const cleanNat = trimmed.replace(/['"\s]/g, '');
+        args.push("-p", cleanNat);
+      }
     }
 
     let isScpOrRsync = false;
@@ -308,8 +319,6 @@ async function main() {
 
     if (isScpOrRsync) {
       core.startGroup("Syncing source code to VM");
-      // Ensure target dir exists
-      await execSSH("ln", ["-s", path.join(process.env["HOME"], "work/"), "$HOME/work"], { host: sshHost });
       if (sync === 'scp') {
         core.info("Syncing via SCP");
         await scpToVM(sshHost);
@@ -319,7 +328,9 @@ async function main() {
       }
       core.endGroup();
     }
-
+    if (sync !== 'no') {
+      await execSSH(`ln -s ${path.join(process.env["HOME"], "work")} $HOME/work`, { host: sshHost });
+    }
     core.startGroup("Run 'prepare' in VM");
     if (prepare) {
       await execSSH(prepare, { host: sshHost });
