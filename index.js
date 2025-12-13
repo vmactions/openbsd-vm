@@ -143,17 +143,17 @@ async function main() {
   try {
     // 1. Inputs
     const debug = core.getInput("debug");
-    const releaseInput = core.getInput("release");
-    const archInput = core.getInput("arch");
-    const inputOsName = core.getInput("osname");
+    const releaseInput = core.getInput("release").toLowerCase();
+    const archInput = core.getInput("arch").toLowerCase();
+    const inputOsName = core.getInput("osname").toLowerCase();
     const mem = core.getInput("mem");
     const cpu = core.getInput("cpu");
     const nat = core.getInput("nat");
     const envs = core.getInput("envs");
     const prepare = core.getInput("prepare");
     const run = core.getInput("run");
-    const sync = core.getInput("sync");
-    const copyback = core.getInput("copyback");
+    const sync = core.getInput("sync").toLowerCase();
+    const copyback = core.getInput("copyback").toLowerCase();
 
     // 2. Load Config
     let env = {};
