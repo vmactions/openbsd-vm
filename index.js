@@ -139,6 +139,40 @@ async function install() {
   }
 }
 
+
+async function scpToVM(sshHost) {
+  const destDir = path.join(process.env["HOME"], "work"); //$HOME/work
+
+  core.info(`==> Ensuring ${destDir} exists...`);
+  await execSSH(`mkdir -p ${destDir}`, { host: sshHost });
+
+  core.info("==> Uploading files via scp (excluding _actions and _PipelineMapping)...");
+
+  const items = await fs.promises.readdir(destDir, { withFileTypes: true });
+
+  for (const item of items) {
+    const itemName = item.name;
+    if (itemName === "_actions" || itemName === "_PipelineMapping") {
+      continue;
+    }
+
+    const localPath = path.join(destDir, itemName);
+    const scpArgs = [
+      "-O",
+      "-r",
+      "-p",
+      "-o", "StrictHostKeyChecking=no",
+      localPath,
+      `${sshHost}:${destDir}/`
+    ];
+
+    core.info(`Uploading: ${localPath} to ${sshHost}:${destDir}/`);
+    await exec.exec("scp", scpArgs);
+  }
+
+  core.info("==> Done.");
+}
+
 async function main() {
   try {
     // 1. Inputs
@@ -229,18 +263,20 @@ async function main() {
       args.push("--mem", mem);
     }
     if (nat) {
-      args.push("--nat", nat);
-    }
-    if (sync) {
-      args.push("--sync", sync);
+      args.push("-p", nat.replace(/\s/g, ''));
     }
 
-    if (sync && sync !== 'no') {
-      const workspace = process.env['GITHUB_WORKSPACE'];
-      if (workspace) {
-        args.push("-v", workspace + ":" + workspace);
+    let isScpOrRsync = false;
+    if (sync) {
+      if (sync === 'scp' || sync === 'rsync') {
+        //we will sync later
+        isScpOrRsync = true;
+      } else {
+        args.push("--sync", sync);
+        args.push("-v", path.join(process.env["HOME"], "work") + ":" + path.join(process.env["HOME"], "work"));
       }
     }
+
 
     args.push("-d"); // Background/daemon
 
@@ -270,6 +306,20 @@ async function main() {
       fs.appendFileSync(sshConfigPath, `Host ${sshHost}\n  SendEnv ${envs}\n`);
     }
 
+    if (isScpOrRsync) {
+      core.startGroup("Syncing source code to VM");
+      // Ensure target dir exists
+      await execSSH("ln", ["-s", path.join(process.env["HOME"], "work/"), "$HOME/work"], { host: sshHost });
+      if (sync === 'scp') {
+        core.info("Syncing via SCP");
+        await scpToVM(sshHost);
+      } else {
+        core.info("Syncing via Rsync");
+        await exec.exec("rsync", ["-avrtopg", "--exclude", "_actions", "--exclude", "_PipelineMapping", path.join(process.env["HOME"], "work/"), `${sshHost}:work/`]);
+      }
+      core.endGroup();
+    }
+
     core.startGroup("Run 'prepare' in VM");
     if (prepare) {
       await execSSH(prepare, { host: sshHost });
@@ -287,10 +337,11 @@ async function main() {
       const workspace = process.env['GITHUB_WORKSPACE'];
       if (workspace) {
         core.info("Copying back artifacts");
+        const work = path.join(process.env["HOME"], "work");
         if (sync === 'scp') {
-          await exec.exec("scp", ["-r", "-o", "StrictHostKeyChecking=no", `${sshHost}:${workspace}/*`, workspace + "/"]);
+          await exec.exec("scp", ["-r", "-O", `${sshHost}:${work}/*`, work + "/"]);
         } else {
-          await exec.exec("rsync", ["-avz", "-e", "ssh -o StrictHostKeyChecking=no", `${sshHost}:${workspace}/`, workspace + "/"]);
+          await exec.exec("rsync", ["-vrtopg", `${sshHost}:${work}/`, work + "/"]);
         }
       }
     }
