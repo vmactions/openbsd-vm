@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [ "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", ""]
+        release: [ "7.7", "7.8", ""]
         arch: [ "aarch64", "", "riscv64"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         exclude:
@@ -89,7 +89,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@29462131e8226263933b1f49cf89a350e15ae116
+      uses: vmactions/openbsd-vm@3c36485776d92d4d2a518cf186f03010989587c9
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -157,7 +157,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [ "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", ""]
+        release: [ "7.7", "7.8", ""]
         arch: [ "aarch64", "", "riscv64"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         exclude:
@@ -217,7 +217,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@29462131e8226263933b1f49cf89a350e15ae116
+      uses: vmactions/openbsd-vm@3c36485776d92d4d2a518cf186f03010989587c9
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -287,7 +287,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [ "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", ""]
+        release: [ "7.7", "7.8", ""]
         arch: [ "aarch64", "", "riscv64"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         exclude:
@@ -342,7 +342,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@29462131e8226263933b1f49cf89a350e15ae116
+      uses: vmactions/openbsd-vm@3c36485776d92d4d2a518cf186f03010989587c9
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -400,7 +400,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [ "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", ""]
+        release: [ "7.7", "7.8", ""]
         arch: [ "aarch64", "", "riscv64"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         exclude:
@@ -453,7 +453,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@29462131e8226263933b1f49cf89a350e15ae116
+      uses: vmactions/openbsd-vm@3c36485776d92d4d2a518cf186f03010989587c9
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
