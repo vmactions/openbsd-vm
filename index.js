@@ -235,6 +235,13 @@ async function main() {
       args.push("--sync", sync);
     }
 
+    if (sync && sync !== 'no') {
+      const workspace = process.env['GITHUB_WORKSPACE'];
+      if (workspace) {
+        args.push("-v", workspace + ":" + workspace);
+      }
+    }
+
     args.push("-d"); // Background/daemon
 
     let sshHost = osName;
@@ -271,40 +278,6 @@ async function main() {
 
     core.startGroup("Run 'run' in VM");
     if (run) {
-      if (sync !== 'no') {
-        // Ensure target dir exists
-        await execSSH(`mkdir -p $HOME/work`, { host: sshHost });
-
-        const workspace = process.env['GITHUB_WORKSPACE'];
-        if (workspace) {
-          if (sync === 'sshfs') {
-            core.info("Setting up SSHFS");
-            // Install sshfs if missing (best effort)
-            await execSSH("if ! command -v sshfs; then pkg_add sshfs || apt-get install -y sshfs || true; fi", { host: sshHost }, true);
-            // Mount
-            await execSSH(`sshfs -o reconnect,ServerAliveCountMax=2,allow_other,default_permissions host:${workspace} $HOME/work`, { host: sshHost });
-          } else if (sync === 'nfs') {
-            core.info("Setting up NFS");
-            // Host side setup
-            await exec.exec("sudo", ["apt-get", "update"], { silent: true });
-            await exec.exec("sudo", ["apt-get", "install", "-y", "nfs-kernel-server"], { silent: true });
-            // Add export
-            const exports = `${workspace} *(rw,insecure,async,no_subtree_check,anonuid=${os.userInfo().uid},anongid=${os.userInfo().gid})`;
-            await exec.exec("bash", ["-c", `echo "${exports}" | sudo tee -a /etc/exports`]);
-            await exec.exec("sudo", ["exportfs", "-a"]);
-            // Mount in VM
-            await execSSH(`mount -t nfs 192.168.122.1:${workspace} $HOME/work || echo "NFS mount failed"`, { host: sshHost });
-          } else if (sync === 'scp') {
-            core.info("Syncing via SCP");
-            await exec.exec("scp", ["-O", "-r", "-o", "StrictHostKeyChecking=no", workspace, `${sshHost}:work/`]);
-          } else {
-            // Rsync (default)
-            core.info("Syncing via Rsync");
-            await exec.exec("rsync", ["-avz", "-e", "ssh -o StrictHostKeyChecking=no", workspace + "/", `${sshHost}:work/`]);
-          }
-        }
-      }
-
       await execSSH(run, { host: sshHost });
     }
     core.endGroup();
@@ -315,9 +288,9 @@ async function main() {
       if (workspace) {
         core.info("Copying back artifacts");
         if (sync === 'scp') {
-          await exec.exec("scp", ["-r", "-o", "StrictHostKeyChecking=no", `${sshHost}:work/*`, workspace + "/"]);
+          await exec.exec("scp", ["-r", "-o", "StrictHostKeyChecking=no", `${sshHost}:${workspace}/*`, workspace + "/"]);
         } else {
-          await exec.exec("rsync", ["-avz", "-e", "ssh -o StrictHostKeyChecking=no", `${sshHost}:work/`, workspace + "/"]);
+          await exec.exec("rsync", ["-avz", "-e", "ssh -o StrictHostKeyChecking=no", `${sshHost}:${workspace}/`, workspace + "/"]);
         }
       }
     }
