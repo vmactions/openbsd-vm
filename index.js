@@ -259,6 +259,10 @@ async function main() {
       args.push("--builder", builderVersion);
     }
 
+    if (debug === 'true') {
+      args.push("--debug");
+    }
+
     if (cpu) {
       args.push("--cpu", cpu);
     }
