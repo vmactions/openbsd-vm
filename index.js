@@ -356,6 +356,11 @@ async function main() {
       } else {
         core.info("Syncing via Rsync");
         await exec.exec("rsync", ["-avrtopg", "--exclude", "_actions", "--exclude", "_PipelineMapping", work + "/", vmWork + "/"]);
+        if (debug) {
+          core.startGroup("Debug: Checking VM work directory content");
+          await execSSH(`tree -L 2 ${vmWork}`, { host: sshHost });
+          core.endGroup();
+        }
       }
       core.endGroup();
     }
