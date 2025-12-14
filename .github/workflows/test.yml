@@ -89,7 +89,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@602e600656b3bea7c3746077c750b1fa50407b0b
+      uses: vmactions/openbsd-vm@fe9d5047511c561ae4fc3c2e8631412c9026f112
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -113,7 +113,7 @@ jobs:
           fi
           echo "TEST_ENV=abc" >>${GITHUB_ENV}
           echo "textfromvm" >$GITHUB_WORKSPACE/vm.txt
-
+          tree /home/runner/work
           pwd
           ls -lah
           whoami
@@ -138,7 +138,7 @@ jobs:
         pwd
         cd $GITHUB_WORKSPACE;
         pwd
-
+          tree /home/runner/work
           pwd
           ls -lah
           whoami
@@ -218,7 +218,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@602e600656b3bea7c3746077c750b1fa50407b0b
+      uses: vmactions/openbsd-vm@fe9d5047511c561ae4fc3c2e8631412c9026f112
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -242,7 +242,7 @@ jobs:
           env
           echo "TEST_ENV=abc" >>${GITHUB_ENV}
           echo "textfromvm" >$GITHUB_WORKSPACE/vm.txt
-
+          tree /home/runner/work
           pwd
           ls -lah
           whoami
@@ -270,7 +270,7 @@ jobs:
         pwd
         cd $GITHUB_WORKSPACE;
         pwd
-
+          tree /home/runner/work
           pwd
           ls -lah
           whoami
@@ -343,7 +343,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@602e600656b3bea7c3746077c750b1fa50407b0b
+      uses: vmactions/openbsd-vm@fe9d5047511c561ae4fc3c2e8631412c9026f112
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -368,7 +368,7 @@ jobs:
           env
           echo "TEST_ENV=abc" >>${GITHUB_ENV}
           echo "textfromvm" >$GITHUB_WORKSPACE/vm.txt
-
+          tree /home/runner/work
           pwd
           ls -lah
           whoami
@@ -454,7 +454,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@602e600656b3bea7c3746077c750b1fa50407b0b
+      uses: vmactions/openbsd-vm@fe9d5047511c561ae4fc3c2e8631412c9026f112
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -471,7 +471,7 @@ jobs:
         run: |
           env
           echo "TEST_ENV=abc" >>${GITHUB_ENV}
-
+          tree /home/runner/work
           pwd
           ls -lah
           whoami
@@ -496,7 +496,7 @@ jobs:
         pwd
         cd $GITHUB_WORKSPACE;
         pwd
-
+          tree /home/runner/work
           pwd
           ls -lah
           whoami
