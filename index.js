@@ -355,7 +355,7 @@ async function main() {
         await scpToVM(sshHost);
       } else {
         core.info("Syncing via Rsync");
-        await exec.exec("rsync", ["-avrtopg", "--exclude", "_actions", "--exclude", "_PipelineMapping", work + "/", vmWork + "/"]);
+        await exec.exec("rsync", ["-avrtopg", "--exclude", "_actions", "--exclude", "_PipelineMapping", "-e", "ssh", work + "/", `${sshHost}:${vmWork}/`]);
         if (debug) {
           core.startGroup("Debug: Checking VM work directory content");
           await execSSH(`tree -L 2 ${vmWork}`, { host: sshHost });

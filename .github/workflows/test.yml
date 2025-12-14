@@ -468,6 +468,7 @@ jobs:
           "8443": "443"
           udp:"8081": "80"
         usesh: true
+        debug: true
         run: |
           env
           echo "TEST_ENV=abc" >>${GITHUB_ENV}
