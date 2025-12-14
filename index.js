@@ -343,10 +343,11 @@ async function main() {
 
 
 
+    const work = path.join(process.env["HOME"], "work");
+    const vmWork = path.join(process.env["HOME"], "work");
+
     if (isScpOrRsync) {
       core.startGroup("Syncing source code to VM");
-      const work = path.join(process.env["HOME"], "work");
-      const vmWork = path.join(process.env["HOME"], "work");
       await execSSH(`rm -rf ${vmWork}`, { host: sshHost });
       await execSSH(`mkdir -p ${vmWork}`, { host: sshHost });
       if (sync === 'scp') {
@@ -378,7 +379,6 @@ async function main() {
       const workspace = process.env['GITHUB_WORKSPACE'];
       if (workspace) {
         core.info("Copying back artifacts");
-        const work = path.join(process.env["HOME"], "work");
         if (sync === 'scp') {
           const remoteTarCmd = `cd "${work}" && find . -name .git -prune -o -print | cpio -o -H ustar`;
           core.info(`Exec SSH: ${remoteTarCmd}`);
