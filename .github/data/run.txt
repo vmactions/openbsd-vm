@@ -1,4 +1,4 @@
-
+          tree /home/runner/work
           pwd
           ls -lah
           whoami
