@@ -350,7 +350,7 @@ async function main() {
         await scpToVM(sshHost);
       } else {
         core.info("Syncing via Rsync");
-        await exec.exec("rsync", ["-avrtopg", "--exclude", "_actions", "--exclude", "_PipelineMapping", path.join(process.env["HOME"], "work/"), `${sshHost}:work/`]);
+        await exec.exec("rsync", ["-avrtopg", "--exclude", "_actions", "--exclude", "_PipelineMapping", path.join(process.env["HOME"], "work/"), path.join(process.env["HOME"], "work/")]);
       }
       core.endGroup();
     }
