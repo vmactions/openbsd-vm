@@ -345,17 +345,21 @@ async function main() {
 
     if (isScpOrRsync) {
       core.startGroup("Syncing source code to VM");
+      const work = path.join(process.env["HOME"], "work");
+      const vmWork = path.join(process.env["HOME"], "work");
+      await execSSH(`rm -rf ${vmWork}`, { host: sshHost });
+      await execSSH(`mkdir -p ${vmWork}`, { host: sshHost });
       if (sync === 'scp') {
         core.info("Syncing via SCP");
         await scpToVM(sshHost);
       } else {
         core.info("Syncing via Rsync");
-        await exec.exec("rsync", ["-avrtopg", "--exclude", "_actions", "--exclude", "_PipelineMapping", path.join(process.env["HOME"], "work/"), path.join(process.env["HOME"], "work/")]);
+        await exec.exec("rsync", ["-avrtopg", "--exclude", "_actions", "--exclude", "_PipelineMapping", work, vmWork]);
       }
       core.endGroup();
     }
     if (sync !== 'no') {
-      await execSSH(`ln -s ${path.join(process.env["HOME"], "work")} $HOME/work`, { host: sshHost });
+      await execSSH(`ln -s ${vmWork} $HOME/work`, { host: sshHost });
     }
     core.startGroup("Run 'prepare' in VM");
     if (prepare) {
