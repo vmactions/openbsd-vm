@@ -402,7 +402,7 @@ async function main() {
             tarProc.on('error', reject);
           });
         } else {
-          await exec.exec("rsync", ["-vrtopg", `${sshHost}:${work}/`, work + "/"]);
+          await exec.exec("rsync", ["-vrtopg", `${sshHost}:` + path.join(process.env["HOME"], "work"), path.join(process.env["HOME"], "work")]);
         }
       }
     }
