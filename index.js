@@ -376,7 +376,7 @@ async function main() {
         core.info("Copying back artifacts");
         const work = path.join(process.env["HOME"], "work");
         if (sync === 'scp') {
-          const remoteTarCmd = `tar -cf - -C "${work}" --exclude .git .`;
+          const remoteTarCmd = `cd "${work}" && find . -name .git -prune -o -print | cpio -o -H ustar`;
           core.info(`Exec SSH: ${remoteTarCmd}`);
 
           await new Promise((resolve, reject) => {
