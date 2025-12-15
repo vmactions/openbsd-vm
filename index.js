@@ -110,7 +110,10 @@ async function execSSH(cmd, sshConfig, ignoreReturn = false) {
   const host = sshConfig.host;
 
   try {
-    await exec.exec("ssh", [...args, host, cmd]);
+    // Pipe command to sh stdin to avoid escaping issues and support multi-line commands
+    await exec.exec("ssh", [...args, host, "sh"], {
+      input: Buffer.from(cmd)
+    });
   } catch (err) {
     if (!ignoreReturn) {
       throw err;
@@ -299,7 +302,7 @@ async function main() {
     let sshHost = osName;
     args.push("--ssh-name", sshHost);
 
-    core.startGroup("Starting VM with anyvm.py");
+    core.startGroup("Starting VM with anyvm.org");
     let output = "";
     const options = {
       listeners: {
@@ -347,6 +350,15 @@ async function main() {
     const vmWork = path.join(process.env["HOME"], "work");
 
     if (isScpOrRsync) {
+      core.startGroup("Syncing source code to VM");
+      // Install rsync in VM if needed
+      if (sync !== 'scp') {
+        core.info("Installing rsync in VM...");
+        if (osName.includes('netbsd')) {
+          await execSSH("/usr/sbin/pkg_add rsync", { host: sshHost }, true);
+        }
+      }
+
       core.startGroup("Syncing source code to VM");
       await execSSH(`rm -rf ${vmWork}`, { host: sshHost });
       await execSSH(`mkdir -p ${vmWork}`, { host: sshHost });
