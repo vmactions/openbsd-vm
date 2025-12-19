@@ -134,6 +134,7 @@ async function install() {
       , "zstd"
       , "ovmf"
       , "xz-utils"
+      , "openssh-server"
       , "qemu-utils"]);
     if (fs.existsSync('/dev/kvm')) {
       await exec.exec("sudo", ["chmod", "666", "/dev/kvm"]);
