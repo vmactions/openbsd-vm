@@ -288,6 +288,17 @@ async function main() {
 
     let isScpOrRsync = false;
     if (sync) {
+      if (process.platform !== 'win32') {
+        const homeDir = process.env.HOME;
+        if (homeDir) {
+          try {
+            core.info(`Setting permissions for ${homeDir}...`);
+            fs.chmodSync(homeDir, '755');
+          } catch (err) {
+            core.warning(`Failed to chmod ${homeDir}: ${err.message}`);
+          }
+        }
+      }
       if (sync === 'scp' || sync === 'rsync') {
         //we will sync later
         isScpOrRsync = true;
