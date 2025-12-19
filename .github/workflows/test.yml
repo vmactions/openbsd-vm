@@ -86,6 +86,10 @@ jobs:
       with:
         protocol: http
         port: 8000
+    - name: Install
+      run: |
+        sudo apt-get update && sudo apt-get install -y openssh-client rsync openssh-server
+        
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
