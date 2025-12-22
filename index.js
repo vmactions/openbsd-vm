@@ -392,14 +392,14 @@ async function main() {
     }
     core.startGroup("Run 'prepare' in VM");
     if (prepare) {
-      const prepareCmd = (sync !== 'no') ? `cd "${vmWork}"\n${prepare}` : prepare;
+      const prepareCmd = (sync !== 'no') ? `cd "$GITHUB_WORKSPACE"\n${prepare}` : prepare;
       await execSSH(prepareCmd, { host: sshHost });
     }
     core.endGroup();
 
     core.startGroup("Run 'run' in VM");
     if (run) {
-      const runCmd = (sync !== 'no') ? `cd "${vmWork}"\n${run}` : run;
+      const runCmd = (sync !== 'no') ? `cd "$GITHUB_WORKSPACE"\n${run}` : run;
       await execSSH(runCmd, { host: sshHost });
     }
     core.endGroup();
