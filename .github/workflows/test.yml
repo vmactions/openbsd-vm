@@ -91,7 +91,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@5d847dde68647cb85af4bb56bc5ba0f4d6cbb1a0
+      uses: vmactions/openbsd-vm@c882a277cfd0a5344d5510727072b594b3a0a00e
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -133,7 +133,7 @@ jobs:
         set -e
         echo "TEST_ENV=$TEST_ENV"
         [ "$TEST_ENV" = "abc" ]
-        ssh -vvv -p 20022 root@localhost  "uname -a;whoami;pwd"
+        ssh -v -p 20022 root@localhost  "uname -a;whoami;pwd"
     - name: Test custom shell
       if: ${{ steps.check.outputs.run == 'true' }}
       shell: openbsd {0}
@@ -222,7 +222,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@5d847dde68647cb85af4bb56bc5ba0f4d6cbb1a0
+      uses: vmactions/openbsd-vm@c882a277cfd0a5344d5510727072b594b3a0a00e
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -268,7 +268,7 @@ jobs:
         grep "textfromvm" $GITHUB_WORKSPACE/vm.txt;
         echo "TEST_ENV=$TEST_ENV"
         [ "$TEST_ENV" = "abc" ]
-        ssh -vvv -p 20022 root@localhost "uname -a;whoami;pwd"
+        ssh -v -p 20022 root@localhost "uname -a;whoami;pwd"
     - name: Test custom shell
       if: ${{ steps.check.outputs.run == 'true' }}
       shell: openbsd {0}
@@ -350,7 +350,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@5d847dde68647cb85af4bb56bc5ba0f4d6cbb1a0
+      uses: vmactions/openbsd-vm@c882a277cfd0a5344d5510727072b594b3a0a00e
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -464,7 +464,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@5d847dde68647cb85af4bb56bc5ba0f4d6cbb1a0
+      uses: vmactions/openbsd-vm@c882a277cfd0a5344d5510727072b594b3a0a00e
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -498,7 +498,7 @@ jobs:
         set -e
         echo "TEST_ENV=$TEST_ENV"
         [ "$TEST_ENV" = "abc" ]
-        ssh -vvv  -p 20022 root@localhost  "uname -a;whoami;pwd"
+        ssh -v  -p 20022 root@localhost  "uname -a;whoami;pwd"
 
     - name: Test custom shell
       if: ${{ steps.check.outputs.run == 'true' }}
