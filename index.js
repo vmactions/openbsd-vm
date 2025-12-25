@@ -268,6 +268,11 @@ async function main() {
     // anyvm.py --os <os> --release <release> --builder <builder> ... -d
     let args = [anyvmPath, "--os", osName, "--release", release];
 
+    // Pass arch to anyvm if specified
+    if (arch) {
+      args.push("--arch", arch);
+    }
+
     // Support configurable data dir; cache dir is what anyvm uses to store artifacts
     const dataDirInput = core.getInput("data-dir") || '';
     const datadir = dataDirInput ? expandVars(dataDirInput, process.env) : path.join(__dirname, 'output');
@@ -280,7 +285,7 @@ async function main() {
     const cacheSupported = isAnyvmCacheSupported(anyvmVersion);
     const cacheDirInput = core.getInput("cache-dir") || '';
     let cacheDir;
-    const archForKey = arch || process.arch === 'x64' ? 'amd64' : process.arch;
+    const archForKey = arch || (process.arch === 'x64' ? 'amd64' : process.arch);
     const cacheKey = `${osName}-${builderVersion || 'default'}-${release}-${archForKey}`;
     const restoreKeys = [cacheKey];
     let restoredKey = null;
