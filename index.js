@@ -1,6 +1,7 @@
 
 const core = require('@actions/core');
 const exec = require('@actions/exec');
+const cache = require('@actions/cache');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -8,6 +9,20 @@ const https = require('https');
 const { spawn } = require('child_process');
 
 const workingDir = __dirname;
+
+// Check if anyvm.py supports --cache-dir (>=0.1.4)
+function isAnyvmCacheSupported(version) {
+  if (!version) return false;
+  const parts = version.split('.');
+  const major = parseInt(parts[0], 10) || 0;
+  const minor = parseInt(parts[1], 10) || 0;
+  // patch part may contain suffix, parseInt will ignore after first non-digit
+  const patch = parseInt((parts[2] || '0'), 10) || 0;
+  if (major > 0) return true;
+  if (major === 0 && minor > 1) return true;
+  if (major === 0 && minor === 1 && patch >= 4) return true;
+  return false;
+}
 
 // Helper to expand shell-style variables
 function expandVars(str, env) {
@@ -253,11 +268,44 @@ async function main() {
     // anyvm.py --os <os> --release <release> --builder <builder> ... -d
     let args = [anyvmPath, "--os", osName, "--release", release];
 
-    const datadir = path.join(__dirname, 'output');
+    // Support configurable data dir; cache dir is what anyvm uses to store artifacts
+    const dataDirInput = core.getInput("data-dir") || '';
+    const datadir = dataDirInput ? expandVars(dataDirInput, process.env) : path.join(__dirname, 'output');
     if (!fs.existsSync(datadir)) {
       fs.mkdirSync(datadir, { recursive: true });
     }
     args.push("--data-dir", datadir);
+
+    // cacheDir is what we restore/save via @actions/cache and pass to anyvm.py --cache-dir (>=0.1.4)
+    const cacheSupported = isAnyvmCacheSupported(anyvmVersion);
+    const cacheDirInput = core.getInput("cache-dir") || '';
+    let cacheDir;
+    const cacheKey = 'vmactionscache';
+    const restoreKeys = [cacheKey];
+    let restoredKey = null;
+
+    if (cacheSupported) {
+      cacheDir = cacheDirInput ? expandVars(cacheDirInput, process.env) : path.join(os.tmpdir(), 'vmactionscache');
+      if (!fs.existsSync(cacheDir)) {
+        fs.mkdirSync(cacheDir, { recursive: true });
+      }
+
+      try {
+        restoredKey = await cache.restoreCache([cacheDir], cacheKey, restoreKeys);
+        if (restoredKey) {
+          core.info(`Cache restored: ${restoredKey}`);
+        } else {
+          core.info('No cache hit for VM cache directory');
+        }
+      } catch (e) {
+        core.warning(`Cache restore failed: ${e.message}`);
+      }
+
+      // Pass cache dir to anyvm
+      args.push("--cache-dir", cacheDir);
+    } else {
+      core.info(`anyvm cache-dir not supported for version ${anyvmVersion}, skip cache.`);
+    }
 
     if (builderVersion) {
       args.push("--builder", builderVersion);
@@ -325,6 +373,20 @@ async function main() {
     };
     await exec.exec("python3", args, options);
     core.endGroup();
+
+    // Save cache for anyvm cache directory immediately after VM start/prepare
+    if (cacheSupported) {
+      try {
+        if (!restoredKey && cacheDir && fs.existsSync(cacheDir)) {
+          await cache.saveCache([cacheDir], cacheKey);
+          core.info(`Cache saved: ${cacheKey}`);
+        } else {
+          core.info('Skip cache save (cache was restored or directory missing)');
+        }
+      } catch (e) {
+        core.warning(`Cache save skipped: ${e.message}`);
+      }
+    }
 
     // SSH Env Config
     const sshDir = path.join(process.env["HOME"], ".ssh");
