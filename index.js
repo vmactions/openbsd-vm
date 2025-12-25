@@ -280,12 +280,13 @@ async function main() {
     const cacheSupported = isAnyvmCacheSupported(anyvmVersion);
     const cacheDirInput = core.getInput("cache-dir") || '';
     let cacheDir;
-    const cacheKey = 'vmactionscache';
+    const archForKey = arch || process.arch === 'x64' ? 'amd64' : process.arch;
+    const cacheKey = `${osName}-${builderVersion || 'default'}-${release}-${archForKey}`;
     const restoreKeys = [cacheKey];
     let restoredKey = null;
 
     if (cacheSupported) {
-      cacheDir = cacheDirInput ? expandVars(cacheDirInput, process.env) : path.join(os.tmpdir(), 'vmactionscache');
+      cacheDir = cacheDirInput ? expandVars(cacheDirInput, process.env) : path.join(os.tmpdir(), cacheKey);
       if (!fs.existsSync(cacheDir)) {
         fs.mkdirSync(cacheDir, { recursive: true });
       }
