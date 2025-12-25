@@ -377,6 +377,16 @@ async function main() {
 
     // Save cache for anyvm cache directory immediately after VM start/prepare
     if (cacheSupported) {
+      if (debug === 'true' && cacheDir && fs.existsSync(cacheDir)) {
+        core.startGroup('Cache dir preview (debug)');
+        try {
+          await exec.exec('du', ['-sh', cacheDir]);
+          await exec.exec('find', [cacheDir, '-maxdepth', '2', '-type', 'f']);
+        } catch (e) {
+          core.warning(`Listing cache dir failed: ${e.message}`);
+        }
+        core.endGroup();
+      }
       try {
         if (!restoredKey && cacheDir && fs.existsSync(cacheDir)) {
           await cache.saveCache([cacheDir], cacheKey);
