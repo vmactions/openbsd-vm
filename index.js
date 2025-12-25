@@ -145,6 +145,7 @@ async function install() {
       , "qemu-system-arm"
       , "qemu-efi-aarch64"
       , "qemu-system-misc"
+      , "u-boot-qemu"
       , "nfs-kernel-server"
       , "rsync"
       , "zstd"
