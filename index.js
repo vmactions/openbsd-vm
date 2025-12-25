@@ -381,7 +381,7 @@ async function main() {
         core.startGroup('Cache dir preview (debug)');
         try {
           await exec.exec('du', ['-sh', cacheDir]);
-          await exec.exec('find', [cacheDir, '-maxdepth', '2', '-type', 'f']);
+          await exec.exec('find', [cacheDir, '-maxdepth', '5', '-type', 'f']);
         } catch (e) {
           core.warning(`Listing cache dir failed: ${e.message}`);
         }
