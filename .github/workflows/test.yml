@@ -80,13 +80,13 @@ jobs:
           echo "The release ${_release} doesn't support ${_arch}, skip."
           echo "run=false" >> $GITHUB_OUTPUT
         fi
-    - name: Creating Web console
-      if: ${{ steps.check.outputs.run == 'true' }}
-      uses: vmactions/cf-tunnel@v0
-      id: tunnel
-      with:
-        protocol: http
-        port: 8000
+#    - name: Creating Web console
+#      if: ${{ steps.check.outputs.run == 'true' }}
+#      uses: vmactions/cf-tunnel@v0
+#      id: tunnel
+#      with:
+#        protocol: http
+#        port: 8000
 
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
@@ -212,13 +212,13 @@ jobs:
           echo "The release ${_release} doesn't support ${_arch}, skip."
           echo "run=false" >> $GITHUB_OUTPUT
         fi
-    - name: Creating Web console
-      if: ${{ steps.check.outputs.run == 'true' }}
-      uses: vmactions/cf-tunnel@v0
-      id: tunnel
-      with:
-        protocol: http
-        port: 8000
+#    - name: Creating Web console
+#      if: ${{ steps.check.outputs.run == 'true' }}
+#      uses: vmactions/cf-tunnel@v0
+#      id: tunnel
+#      with:
+#        protocol: http
+#        port: 8000
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
@@ -340,13 +340,13 @@ jobs:
           echo "The release ${_release} doesn't support ${_arch}, skip."
           echo "run=false" >> $GITHUB_OUTPUT
         fi
-    - name: Creating Web console
-      if: ${{ steps.check.outputs.run == 'true' }}
-      uses: vmactions/cf-tunnel@v0
-      id: tunnel
-      with:
-        protocol: http
-        port: 8000
+#    - name: Creating Web console
+#      if: ${{ steps.check.outputs.run == 'true' }}
+#      uses: vmactions/cf-tunnel@v0
+#      id: tunnel
+#      with:
+#        protocol: http
+#        port: 8000
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
