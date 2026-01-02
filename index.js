@@ -7,6 +7,7 @@ const path = require('path');
 const os = require('os');
 const https = require('https');
 const { spawn } = require('child_process');
+const crypto = require('crypto');
 
 const workingDir = __dirname;
 
@@ -151,23 +152,89 @@ async function execSSH(cmd, sshConfig, ignoreReturn = false) {
   }
 }
 
-async function install() {
+async function install(arch, sync, builderVersion, debug) {
+  const start = Date.now();
   core.info("Installing dependencies...");
   if (process.platform === 'linux') {
-    await exec.exec("sudo", ["apt-get", "update"]);
-    await exec.exec("sudo", ["apt-get", "install", "-y", "--no-install-recommends"
-      , "qemu-system-x86"
-      , "qemu-system-arm"
-      , "qemu-efi-aarch64"
-      , "qemu-system-misc"
-      , "u-boot-qemu"
-      , "nfs-kernel-server"
-      , "rsync"
-      , "zstd"
-      , "ovmf"
-      , "xz-utils"
-      , "openssh-server"
-      , "qemu-utils"]);
+    const pkgs = [
+      "qemu-utils"
+    ];
+
+    if (!arch || arch === 'x86_64' || arch === 'amd64') {
+      pkgs.push("qemu-system-x86", "ovmf");
+    } else if (arch === 'aarch64' || arch === 'arm64') {
+      pkgs.push("qemu-system-arm", "qemu-efi-aarch64", "ipxe-qemu");
+    } else {
+      pkgs.push("qemu-system-misc", "u-boot-qemu", "ipxe-qemu");
+    }
+
+    if (sync === 'nfs') {
+      pkgs.push("nfs-kernel-server");
+    }
+    if (sync === 'rsync') {
+      let rsyncRequired = true;
+      if (builderVersion) {
+        const parts = builderVersion.split('.');
+        const major = parseInt(parts[0], 10) || 0;
+        if (major >= 2) {
+          rsyncRequired = false;
+        }
+      }
+
+      if (rsyncRequired) {
+        pkgs.push("rsync");
+      }
+    }
+
+    const aptOpts = [
+      "-o", "Acquire::Retries=3",
+      "-o", "Dpkg::Options::=--force-confdef",
+      "-o", "Dpkg::Options::=--force-confold",
+      "-o", "Dpkg::Options::=--force-unsafe-io",
+      "-o", "Acquire::Languages=none",
+    ];
+
+    const aptCacheDir = path.join(os.homedir(), ".apt-cache");
+    if (!fs.existsSync(aptCacheDir)) {
+      fs.mkdirSync(aptCacheDir, { recursive: true });
+    }
+
+    const osVersion = process.env.ImageOS || os.release();
+    const osArch = process.arch;
+    const hash = crypto.createHash('md5').update(pkgs.sort().join(',')).digest('hex');
+    const aptCacheKey = `apt-pkgs-${process.platform}-${osVersion}-${osArch}-${hash}`;
+    let restoredKey = null;
+
+    try {
+      restoredKey = await cache.restoreCache([aptCacheDir], aptCacheKey);
+      if (restoredKey) {
+        core.info(`Restored apt packages from cache: ${restoredKey}`);
+        await exec.exec("sudo", ["cp", "-rp", `${aptCacheDir}/.`, "/var/cache/apt/archives/"], { silent: true });
+      }
+    } catch (e) {
+      core.warning(`Apt cache restore failed: ${e.message}`);
+    }
+
+    // 1. Update with quiet mode
+    await exec.exec("sudo", ["apt-get", "update", "-q"], { silent: true });
+
+    // 2. Install the packages
+    await exec.exec("sudo", ["apt-get", "install", "-y", "-q", ...aptOpts, "--no-install-recommends", ...pkgs]);
+
+    // 3. Save cache
+    try {
+      if (!restoredKey) {
+        // Copy newly downloaded files back to our local cache dir
+        await exec.exec("sh", ["-c", `cp -rp /var/cache/apt/archives/*.deb ${aptCacheDir}/ || true`], { silent: true });
+        if (fs.readdirSync(aptCacheDir).length > 0) {
+          await cache.saveCache([aptCacheDir], aptCacheKey);
+          core.info(`Saved apt packages to cache: ${aptCacheKey}`);
+        }
+      }
+    } catch (e) {
+      core.warning(`Apt cache save failed: ${e.message}`);
+    }
+
     if (fs.existsSync('/dev/kvm')) {
       await exec.exec("sudo", ["chmod", "666", "/dev/kvm"]);
     }
@@ -175,6 +242,11 @@ async function install() {
     await exec.exec("brew", ["install", "qemu"]);
   } else if (process.platform === 'win32') {
     await exec.exec("choco", ["install", "qemu", "-y"]);
+  }
+
+  if (debug === 'true') {
+    const elapsed = Date.now() - start;
+    core.info(`install() took ${elapsed}ms`);
   }
 }
 
@@ -281,7 +353,7 @@ async function main() {
     await downloadFile(anyvmUrl, anyvmPath);
 
     core.startGroup("Installing dependencies");
-    await install();
+    await install(arch, sync, builderVersion, debug);
     core.endGroup();
 
     // 4. Start VM
@@ -396,6 +468,7 @@ async function main() {
     if (osName === 'haiku') {
       args.push("--vga", "std");
     }
+    args.push("--vnc", "off");
 
     core.startGroup("Starting VM with anyvm.org");
     let output = "";
@@ -527,7 +600,19 @@ async function main() {
       if (workspace) {
         core.info("Copying back artifacts");
         if (sync === 'scp') {
-          const remoteTarCmd = `if command -v cpio > /dev/null 2>&1; then cd "${vmwork}" && find . -name .git -prune -o -print | cpio -o -H ustar; else cd "${vmwork}" && tar -cf - --exclude .git .; fi`;
+          let useCpio = true;
+          if (osName === 'haiku') {
+            try {
+              await execSSH("command -v cpio", sshConfig);
+            } catch (e) {
+              useCpio = false;
+            }
+          }
+
+          const remoteTarCmd = useCpio
+            ? `cd "${vmwork}" && find . -name .git -prune -o -print | cpio -o -H ustar`
+            : `cd "${vmwork}" && tar -cf - --exclude .git .`;
+
           core.info(`Exec SSH: ${remoteTarCmd}`);
 
           await new Promise((resolve, reject) => {
