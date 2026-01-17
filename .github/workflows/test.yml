@@ -48,7 +48,7 @@ jobs:
       DEBUG: 1
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Check arch
       id: check
       run: |
@@ -91,7 +91,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@f662a23ede53466cdf6a97b4d64404e90a09cb7c
+      uses: vmactions/openbsd-vm@18acbd5ede9e22b6454dd9b8380ce550c4f12da9
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -181,7 +181,7 @@ jobs:
       DEBUG: 1
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Check arch
       id: check
       run: |
@@ -223,7 +223,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@f662a23ede53466cdf6a97b4d64404e90a09cb7c
+      uses: vmactions/openbsd-vm@18acbd5ede9e22b6454dd9b8380ce550c4f12da9
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -314,7 +314,7 @@ jobs:
       DEBUG: 1
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Check arch
       id: check
       run: |
@@ -351,7 +351,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@f662a23ede53466cdf6a97b4d64404e90a09cb7c
+      uses: vmactions/openbsd-vm@18acbd5ede9e22b6454dd9b8380ce550c4f12da9
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -432,7 +432,7 @@ jobs:
       SEC_VBOX : ${{ vars.SEC_VBOX }}
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Check arch
       id: check
       run: |
@@ -467,7 +467,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@f662a23ede53466cdf6a97b4d64404e90a09cb7c
+      uses: vmactions/openbsd-vm@18acbd5ede9e22b6454dd9b8380ce550c4f12da9
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
