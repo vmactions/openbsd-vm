@@ -536,6 +536,7 @@ async function main() {
       core.endGroup();
     }
 
+    core.startGroup("SSH Config");
     const sshDir = path.join(process.env["HOME"], ".ssh");
     if (!fs.existsSync(sshDir)) {
       fs.mkdirSync(sshDir, { recursive: true });
@@ -561,6 +562,7 @@ async function main() {
       core.info("SSH config content:");
       core.info(fs.readFileSync(sshConfigPath, "utf8"));
     }
+    core.endGroup();
 
     const sshConfig = {
       host: sshHost,
