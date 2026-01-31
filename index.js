@@ -408,6 +408,14 @@ async function main() {
         core.info(`cache.restoreCache() took ${restoreElapsed}ms`);
         if (restoredKey) {
           core.info(`Cache restored: ${restoredKey}`);
+          if (debug === 'true' && cacheDir && fs.existsSync(cacheDir)) {
+            core.info('Restored cache dir preview (debug)');
+            try {
+              await exec.exec('ls', ['-R', cacheDir]);
+            } catch (e) {
+              core.warning(`Listing restored cache dir failed: ${e.message}`);
+            }
+          }
         } else {
           core.info('No cache hit for VM cache directory');
         }
