@@ -1,13 +1,17 @@
 
-const core = require('@actions/core');
-const exec = require('@actions/exec');
-const cache = require('@actions/cache');
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const https = require('https');
-const { spawn } = require('child_process');
-const crypto = require('crypto');
+import * as core from '@actions/core';
+import * as exec from '@actions/exec';
+import * as cache from '@actions/cache';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
+import * as https from 'https';
+import { spawn } from 'child_process';
+import * as crypto from 'crypto';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const workingDir = __dirname;
 
@@ -345,11 +349,10 @@ async function main() {
     const builderVersion = env['BUILDER_VERSION'];
     const osName = inputOsName;
 
+    core.startGroup("Configuration AnyVM.org");
     core.info(`Using ANYVM_VERSION: ${anyvmVersion}`);
     core.info(`Using BUILDER_VERSION: ${builderVersion}`);
     core.info(`Target OS: ${osName}, Release: ${release}`);
-
-
 
     // 3. Download anyvm.py
     if (!anyvmVersion) {
@@ -358,6 +361,7 @@ async function main() {
     const anyvmUrl = `https://raw.githubusercontent.com/anyvm-org/anyvm/v${anyvmVersion}/anyvm.py`;
     const anyvmPath = path.join(__dirname, 'anyvm.py');
     await downloadFile(anyvmUrl, anyvmPath);
+    core.endGroup();
 
     core.startGroup("Installing dependencies");
     await install(arch, sync, builderVersion, debug, disableCache);
@@ -390,6 +394,7 @@ async function main() {
     const restoreKeys = [cacheKey];
     let restoredKey = null;
 
+    core.startGroup("Cache");
     if (cacheSupported && !disableCache) {
       cacheDir = cacheDirInput ? expandVars(cacheDirInput, process.env) : path.join(os.tmpdir(), cacheKey);
       if (!fs.existsSync(cacheDir)) {
@@ -415,6 +420,7 @@ async function main() {
     } else {
       core.info(`anyvm cache-dir skip cache (cacheSupported: ${cacheSupported}, disableCache: ${disableCache}).`);
     }
+    core.endGroup();
 
     if (builderVersion) {
       args.push("--builder", builderVersion);
@@ -454,12 +460,14 @@ async function main() {
       if (process.platform !== 'win32') {
         const homeDir = process.env.HOME;
         if (homeDir) {
+          core.startGroup("Permissions");
           try {
             core.info(`Setting permissions for ${homeDir}...`);
             fs.chmodSync(homeDir, '755');
           } catch (err) {
             core.warning(`Failed to chmod ${homeDir}: ${err.message}`);
           }
+          core.endGroup();
         }
       }
       if (sync === 'scp' || sync === 'rsync') {
@@ -497,6 +505,7 @@ async function main() {
 
     // Save cache for anyvm cache directory immediately after VM start/prepare
     if (cacheSupported && !disableCache) {
+      core.startGroup("Save Cache");
       if (debug === 'true' && cacheDir && fs.existsSync(cacheDir)) {
         core.startGroup('Cache dir preview (debug)');
         try {
@@ -517,6 +526,7 @@ async function main() {
       } catch (e) {
         core.warning(`Cache save skipped: ${e.message}`);
       }
+      core.endGroup();
     }
 
     const sshDir = path.join(process.env["HOME"], ".ssh");
