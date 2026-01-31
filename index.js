@@ -390,7 +390,7 @@ async function main() {
     const cacheDirInput = core.getInput("cache-dir") || '';
     let cacheDir;
     const archForKey = arch || (process.arch === 'x64' ? 'amd64' : process.arch);
-    const cacheKey = `${osName}-${release}-${builderVersion || 'default'}-${archForKey}-v1`;
+    const cacheKey = `${osName}-${release}-${builderVersion || 'default'}-${archForKey}-v2`;
     const restoreKeys = [cacheKey];
     let restoredKey = null;
 
