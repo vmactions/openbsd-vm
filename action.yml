@@ -56,7 +56,7 @@ inputs:
     required: false
     default: 'false'
   debug-on-error:
-    description: 'If true, enable remote VNC and wait for SSH connection on error. Default is empty.'
+    description: 'If true, enable remote VNC and you can connect to the VM via web VNC page to debug. Default is false.'
     required: false
     default: ''
 branding:
