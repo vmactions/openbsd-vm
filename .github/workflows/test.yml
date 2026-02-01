@@ -29,7 +29,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [ "7.7", "7.8", ""]
+        release: [ "7.7", "7.8"
+, ""]
         arch: [ "aarch64", "", "riscv64"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         exclude:
@@ -91,7 +92,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@7e9214e786e8569f722d93f52ce8b115a565032c
+      uses: vmactions/openbsd-vm@ac251dd502e0c49296c8ece898d2bb74c4213156
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -162,7 +163,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [ "7.7", "7.8", ""]
+        release: [ "7.7", "7.8"
+, ""]
         arch: [ "aarch64", "", "riscv64"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         exclude:
@@ -223,7 +225,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@7e9214e786e8569f722d93f52ce8b115a565032c
+      uses: vmactions/openbsd-vm@ac251dd502e0c49296c8ece898d2bb74c4213156
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -295,7 +297,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [ "7.7", "7.8", ""]
+        release: [ "7.7", "7.8"
+, ""]
         arch: [ "aarch64", "", "riscv64"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         exclude:
@@ -351,7 +354,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@7e9214e786e8569f722d93f52ce8b115a565032c
+      uses: vmactions/openbsd-vm@ac251dd502e0c49296c8ece898d2bb74c4213156
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -413,7 +416,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [ "7.7", "7.8", ""]
+        release: [ "7.7", "7.8"
+, ""]
         arch: [ "aarch64", "", "riscv64"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         disableCache: [ "", "true"]
@@ -468,7 +472,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@7e9214e786e8569f722d93f52ce8b115a565032c
+      uses: vmactions/openbsd-vm@ac251dd502e0c49296c8ece898d2bb74c4213156
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
