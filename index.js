@@ -14,6 +14,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const workingDir = __dirname;
+const backgroundPromises = [];
+let activeBackgroundTasks = 0;
 
 // Check if anyvm.py supports --cache-dir (>=0.1.4)
 function isAnyvmCacheSupported(version) {
@@ -157,6 +159,67 @@ async function execSSH(cmd, sshConfig, ignoreReturn = false, silent = false) {
   }
 }
 
+async function handleErrorWithDebug(sshHost, vncLink, debug) {
+  const message = vncLink
+    ? `Please open the remote vnc link for debugging: ${vncLink} . To finish debugging, you can run \`touch ~/continue\` in the VM. In the VM, you can use \`ssh host\` to access the host.`
+    : "Please open the remote vnc link for debugging. To finish debugging, you can run `touch ~/continue` in the VM. In the VM, you can use `ssh host` to access the host.";
+
+  core.warning(message);
+
+  const args = [
+    "-o", "StrictHostKeyChecking=no",
+    "-o", "UserKnownHostsFile=/dev/null",
+    "-o", "ConnectTimeout=3",
+    sshHost
+  ];
+
+  core.info("Monitoring ~/continue file in the VM...");
+  const continueFile = "~/continue";
+  let finished = false;
+  let counter = 0;
+  while (!finished) {
+    counter++;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 3000);
+    try {
+      if (debug === 'true') {
+        core.info(`[Debug] Checking for ${continueFile} in VM (Attempt ${counter})...`);
+      }
+      const exitCode = await exec.exec("ssh", [...args, `test -f ${continueFile}`], {
+        silent: true,
+        ignoreReturnCode: true,
+        signal: controller.signal
+      });
+
+      if (debug === 'true') {
+        core.info(`[Debug] SSH exit code: ${exitCode}`);
+      }
+
+      if (exitCode === 0) {
+        core.info(`${continueFile} found. Cleaning up and continuing...`);
+        await exec.exec("ssh", [...args, `rm -f ${continueFile}`], { silent: true });
+        finished = true;
+      } else if (exitCode === 1) {
+        // File not found, but SSH is fine. Just wait and retry.
+        await new Promise(r => setTimeout(r, 5000));
+      } else {
+        // Any other exit code (like 255) usually means SSH connection failed
+        if (debug === 'true') {
+          core.info(`[Debug] SSH failed with exit code ${exitCode}. Assuming VM exited.`);
+        }
+        throw new Error("The VM has exited (SSH connection failed), so the debugging process is terminating.");
+      }
+    } catch (e) {
+      if (debug === 'true') {
+        core.info(`[Debug] SSH check threw error: ${e.message}`);
+      }
+      throw new Error("The VM has exited, so the debugging process is terminating.");
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+}
+
 async function install(arch, sync, builderVersion, debug, disableCache) {
   const start = Date.now();
   core.info("Installing dependencies...");
@@ -230,18 +293,24 @@ async function install(arch, sync, builderVersion, debug, disableCache) {
 
     // 3. Save cache
     if (!disableCache) {
-      try {
-        if (!restoredKey) {
-          // Copy newly downloaded files back to our local cache dir
-          await exec.exec("sh", ["-c", `cp -rp /var/cache/apt/archives/*.deb ${aptCacheDir}/ || true`], { silent: true });
-          if (fs.readdirSync(aptCacheDir).length > 0) {
-            await cache.saveCache([aptCacheDir], aptCacheKey);
-            core.info(`Saved apt packages to cache: ${aptCacheKey}`);
+      const saveAptCache = async () => {
+        activeBackgroundTasks++;
+        try {
+          if (!restoredKey) {
+            // Copy newly downloaded files back to our local cache dir
+            await exec.exec("sh", ["-c", `cp -rp /var/cache/apt/archives/*.deb ${aptCacheDir}/ || true`], { silent: true });
+            if (fs.readdirSync(aptCacheDir).length > 0) {
+              await cache.saveCache([aptCacheDir], aptCacheKey);
+              core.info(`Saved apt packages to cache: ${aptCacheKey}`);
+            }
           }
+        } catch (e) {
+          core.warning(`Apt cache save failed: ${e.message}`);
+        } finally {
+          activeBackgroundTasks--;
         }
-      } catch (e) {
-        core.warning(`Apt cache save failed: ${e.message}`);
-      }
+      };
+      backgroundPromises.push(saveAptCache());
     }
 
     if (fs.existsSync('/dev/kvm')) {
@@ -260,7 +329,7 @@ async function install(arch, sync, builderVersion, debug, disableCache) {
 }
 
 
-async function scpToVM(sshHost, work, vmwork, osName) {
+async function scpToVM(sshHost, work, vmwork, osName, debug) {
   core.info(`==> Ensuring ${vmwork} exists...`);
   await execSSH(`mkdir -p ${vmwork}`, { host: sshHost, osName, work, vmwork });
 
@@ -284,8 +353,10 @@ async function scpToVM(sshHost, work, vmwork, osName) {
       `${sshHost}:${vmwork}/`
     ];
 
-    core.info(`Uploading: ${localPath} to ${sshHost}:${vmwork}/`);
-    await exec.exec("scp", scpArgs);
+    if (debug === 'true') {
+      core.info(`Uploading: ${localPath} to ${sshHost}:${vmwork}/`);
+    }
+    await exec.exec("scp", scpArgs, { silent: debug !== 'true' });
   }
 
   core.info("==> Done.");
@@ -308,6 +379,7 @@ async function main() {
     const copyback = core.getInput("copyback").toLowerCase();
     const syncTime = core.getInput("sync-time").toLowerCase();
     const disableCache = core.getInput("disable-cache").toLowerCase() === 'true';
+    const debugOnError = core.getInput("debug-on-error").toLowerCase() === 'true';
 
     const work = path.join(process.env["HOME"], "work");
     let vmwork = path.join(process.env["HOME"], "work");
@@ -380,6 +452,7 @@ async function main() {
     // Support configurable data dir; cache dir is what anyvm uses to store artifacts
     const dataDirInput = core.getInput("data-dir") || '';
     const datadir = dataDirInput ? expandVars(dataDirInput, process.env) : path.join(__dirname, 'output');
+    const remoteVncLinkFile = path.join(datadir, "remotevnc.link");
     if (!fs.existsSync(datadir)) {
       fs.mkdirSync(datadir, { recursive: true });
     }
@@ -497,7 +570,15 @@ async function main() {
     if (osName === 'haiku') {
       args.push("--vga", "std");
     }
-    args.push("--vnc", "off");
+
+    if (debugOnError) {
+      args.push("--remote-vnc");
+      args.push("--accept-vm-ssh");
+      args.push("--remote-vnc-link-file", remoteVncLinkFile);
+
+    } else {
+      args.push("--vnc", "off");
+    }
 
     core.startGroup("Starting VM with anyvm.org");
     let output = "";
@@ -513,27 +594,32 @@ async function main() {
 
     // Save cache for anyvm cache directory immediately after VM start/prepare
     if (cacheSupported && !disableCache) {
-      core.startGroup("Save Cache");
-      if (debug === 'true' && cacheDir && fs.existsSync(cacheDir)) {
-        core.info('Cache dir preview (debug)');
+      const saveVmCache = async () => {
+        activeBackgroundTasks++;
+        core.info("Save Cache (Background)");
+        if (debug === 'true' && cacheDir && fs.existsSync(cacheDir)) {
+          core.info('Cache dir preview (debug)');
+          try {
+            await exec.exec('du', ['-sh', cacheDir]);
+            await exec.exec('find', [cacheDir, '-maxdepth', '5', '-type', 'f']);
+          } catch (e) {
+            core.warning(`Listing cache dir failed: ${e.message}`);
+          }
+        }
         try {
-          await exec.exec('du', ['-sh', cacheDir]);
-          await exec.exec('find', [cacheDir, '-maxdepth', '5', '-type', 'f']);
+          if (!restoredKey && cacheDir && fs.existsSync(cacheDir)) {
+            await cache.saveCache([cacheDir], cacheKey);
+            core.info(`Cache saved: ${cacheKey}`);
+          } else {
+            core.info('Skip cache save (cache was restored or directory missing)');
+          }
         } catch (e) {
-          core.warning(`Listing cache dir failed: ${e.message}`);
+          core.warning(`Cache save skipped: ${e.message}`);
+        } finally {
+          activeBackgroundTasks--;
         }
-      }
-      try {
-        if (!restoredKey && cacheDir && fs.existsSync(cacheDir)) {
-          await cache.saveCache([cacheDir], cacheKey);
-          core.info(`Cache saved: ${cacheKey}`);
-        } else {
-          core.info('Skip cache save (cache was restored or directory missing)');
-        }
-      } catch (e) {
-        core.warning(`Cache save skipped: ${e.message}`);
-      }
-      core.endGroup();
+      };
+      backgroundPromises.push(saveVmCache());
     }
 
     core.startGroup("SSH Config");
@@ -604,10 +690,11 @@ async function main() {
       await execSSH(`mkdir -p ${vmwork}`, { ...sshConfig });
       if (sync === 'scp') {
         core.info("Syncing via SCP");
-        await scpToVM(sshHost, work, vmwork, osName);
+        await scpToVM(sshHost, work, vmwork, osName, debug);
       } else {
         core.info("Syncing via Rsync");
-        await exec.exec("rsync", ["-avrtopg", "--exclude", "_actions", "--exclude", "_PipelineMapping", "-e", "ssh", work + "/", `${sshHost}:${vmwork}/`]);
+        const rsyncArgs = [debug === 'true' ? "-avrtopg" : "-artopg", "--exclude", "_actions", "--exclude", "_PipelineMapping", "-e", "ssh", work + "/", `${sshHost}:${vmwork}/`];
+        await exec.exec("rsync", rsyncArgs);
         if (debug) {
           core.startGroup("Debug: Checking VM work directory content");
           await execSSH(`tree -L 2 ${vmwork}`, { ...sshConfig });
@@ -621,19 +708,41 @@ async function main() {
       await execSSH(`ln -s ${vmwork} $HOME/work`, { ...sshConfig });
       core.endGroup();
     }
-    core.startGroup("Run 'prepare' in VM");
-    if (prepare) {
-      const prepareCmd = (sync !== 'no') ? `cd "$GITHUB_WORKSPACE"\n${prepare}` : prepare;
-      await execSSH(prepareCmd, { ...sshConfig });
+    try {
+      core.startGroup("Run 'prepare' in VM");
+      if (prepare) {
+        const prepareCmd = (sync !== 'no') ? `cd "$GITHUB_WORKSPACE"\n${prepare}` : prepare;
+        await execSSH(prepareCmd, { ...sshConfig });
+      }
+      core.endGroup();
+    } catch (err) {
+      core.endGroup();
+      if (debugOnError) {
+        let vncLink = "";
+        if (fs.existsSync(remoteVncLinkFile)) {
+          vncLink = fs.readFileSync(remoteVncLinkFile, 'utf8').split('\n')[0].trim();
+        }
+        await handleErrorWithDebug(sshHost, vncLink, debug);
+      }
     }
-    core.endGroup();
 
-    core.startGroup("Run 'run' in VM");
-    if (run) {
-      const runCmd = (sync !== 'no') ? `cd "$GITHUB_WORKSPACE"\n${run}` : run;
-      await execSSH(runCmd, { ...sshConfig });
+    try {
+      core.startGroup("Run 'run' in VM");
+      if (run) {
+        const runCmd = (sync !== 'no') ? `cd "$GITHUB_WORKSPACE"\n${run}` : run;
+        await execSSH(runCmd, { ...sshConfig });
+      }
+      core.endGroup();
+    } catch (err) {
+      core.endGroup();
+      if (debugOnError) {
+        let vncLink = "";
+        if (fs.existsSync(remoteVncLinkFile)) {
+          vncLink = fs.readFileSync(remoteVncLinkFile, 'utf8').split('\n')[0].trim();
+        }
+        await handleErrorWithDebug(sshHost, vncLink, debug);
+      }
     }
-    core.endGroup();
 
     // 7. Copyback
     if (copyback !== 'false' && sync !== 'no' && sync !== 'sshfs' && sync !== 'nfs') {
@@ -679,10 +788,17 @@ async function main() {
             tarProc.on('error', reject);
           });
         } else {
-          await exec.exec("rsync", ["-av", "--exclude", ".git", "-e", "ssh", `${sshHost}:${vmwork}/`, `${work}/`]);
+          await exec.exec("rsync", [debug === 'true' ? "-av" : "-a", "--exclude", ".git", "-e", "ssh", `${sshHost}:${vmwork}/`, `${work}/`]);
         }
         core.endGroup();
       }
+    }
+
+    if (backgroundPromises.length > 0) {
+      if (activeBackgroundTasks > 0) {
+        core.info(`Waiting for ${activeBackgroundTasks} background tasks to complete...`);
+      }
+      await Promise.allSettled(backgroundPromises);
     }
 
   } catch (error) {

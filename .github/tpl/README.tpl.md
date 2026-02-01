@@ -78,7 +78,7 @@ So, you will have the same directory and same default env variables when you `ru
 The code is shared from the host to the VM via `rsync` by default, you can choose to use `sshfs` or `nfs` or `scp` to share code instead.
 
 
-```
+```yaml
 
 ...
 
@@ -107,7 +107,7 @@ You can also set `sync: no`, so the files will not be synced to the  VM.
 When using `rsync` or `scp`,  you can define `copyback: false` to not copy files back from the VM in to the host.
 
 
-```
+```yaml
 
 ...
 
@@ -139,7 +139,7 @@ When using `rsync` or `scp`,  you can define `copyback: false` to not copy files
 
 You can add NAT port between the host and the VM.
 
-```
+```yaml
 ...
     steps:
     - uses: actions/checkout@v6
@@ -161,7 +161,8 @@ You can add NAT port between the host and the VM.
 
 The default memory of the VM is 6144MB, you can use `mem` option to set the memory size:
 
-```
+```yaml
+
 ...
     steps:
     - uses: actions/checkout@v6
@@ -178,7 +179,8 @@ The default memory of the VM is 6144MB, you can use `mem` option to set the memo
 
 The VM is using all the cpu cores of the host by default, you can use `cpu` option to change the cpu cores:
 
-```
+```yaml
+
 ...
     steps:
     - uses: actions/checkout@v6
@@ -197,7 +199,7 @@ The VM is using all the cpu cores of the host by default, you can use `cpu` opti
 
 It uses [the {{VM_NAME}} {{DEFAULT_RELEASE}}](conf/default.release.conf) by default, you can use `release` option to use another version of {{VM_NAME}}:
 
-```
+```yaml
 ...
     steps:
     - uses: actions/checkout@v6
@@ -214,7 +216,7 @@ It uses [the {{VM_NAME}} {{DEFAULT_RELEASE}}](conf/default.release.conf) by defa
 
 The vm is using x86_64(AMD64) by default, but you can use `arch` option to change the architecture:
 
-```
+```yaml
 ...
     runs-on: {{VM_RUNS_ON}}
     name: A job to run test in {{VM_NAME}}
@@ -242,7 +244,7 @@ It's not recommended to use `ubuntu-24.04-arm` as runner, it's much more slower.
 
 Support custom shell:
 
-```
+```yaml
 ...
     steps:
     - uses: actions/checkout@v6
@@ -271,7 +273,7 @@ Support custom shell:
 
 If the time in VM is not correct, You can use `sync-time` option to synchronize the VM time with NTP:
 
-```
+```yaml
 ...
     steps:
     - uses: actions/checkout@v6
@@ -301,13 +303,28 @@ By default, the action caches `apt` packages on the host and VM images/artifacts
 ```
 
 
-## 10. Debug locally
+## 10. Debug on error
 
-You can use [AnyVM.org](https://github.com/anyvm-org/anyvm) to run the {{VM_NAME}} VM locally for debugging. It's the same environment as in the GitHub Actions.
+If you want to debug the VM when the `prepare` or `run` step fails, you can set `debug-on-error: true`.
 
-```bash
-python3 anyvm.py --os {{VM_OS_NAME}}
+When a failure occurs, the action will enable a remote VNC link and wait for your interaction. You can then access the VM via VNC to debug. To continue or finish the action, you can run `touch ~/continue` inside the VM.
+
+```yaml
+...
+    steps:
+    - uses: actions/checkout@v6
+    - name: Test
+      id: test
+      uses: {{GITHUB_REPOSITORY}}@{{LATEST_MAJOR}}
+      with:
+        debug-on-error: true
+
+...
 ```
+
+
+
+See more: [debug on error](https://github.com/vmactions/.github/wiki/debug%E2%80%90on%E2%80%90error)
 
 
 
