@@ -262,56 +262,11 @@ async function install(arch, sync, builderVersion, debug, disableCache) {
       "-o", "Acquire::Languages=none",
     ];
 
-    const aptCacheDir = path.join(os.homedir(), ".apt-cache");
-    if (!disableCache && !fs.existsSync(aptCacheDir)) {
-      fs.mkdirSync(aptCacheDir, { recursive: true });
-    }
-
-    const osVersion = process.env.ImageOS || os.release();
-    const osArch = process.arch;
-    const hash = crypto.createHash('md5').update(pkgs.sort().join(',')).digest('hex');
-    const aptCacheKey = `apt-pkgs-${process.platform}-${osVersion}-${osArch}-${hash}`;
-    let restoredKey = null;
-
-    if (!disableCache) {
-      try {
-        restoredKey = await cache.restoreCache([aptCacheDir], aptCacheKey);
-        if (restoredKey) {
-          core.info(`Restored apt packages from cache: ${restoredKey}`);
-          await exec.exec("sudo", ["cp", "-rp", `${aptCacheDir}/.`, "/var/cache/apt/archives/"], { silent: true });
-        }
-      } catch (e) {
-        core.warning(`Apt cache restore failed: ${e.message}`);
-      }
-    }
-
     // 1. Update with quiet mode
     await exec.exec("sudo", ["apt-get", "update", "-q"], { silent: true });
 
     // 2. Install the packages
     await exec.exec("sudo", ["apt-get", "install", "-y", "-q", ...aptOpts, "--no-install-recommends", ...pkgs]);
-
-    // 3. Save cache
-    if (!disableCache) {
-      const saveAptCache = async () => {
-        activeBackgroundTasks++;
-        try {
-          if (!restoredKey) {
-            // Copy newly downloaded files back to our local cache dir
-            await exec.exec("sh", ["-c", `cp -rp /var/cache/apt/archives/*.deb ${aptCacheDir}/ || true`], { silent: true });
-            if (fs.readdirSync(aptCacheDir).length > 0) {
-              await cache.saveCache([aptCacheDir], aptCacheKey);
-              core.info(`Saved apt packages to cache: ${aptCacheKey}`);
-            }
-          }
-        } catch (e) {
-          core.warning(`Apt cache save failed: ${e.message}`);
-        } finally {
-          activeBackgroundTasks--;
-        }
-      };
-      backgroundPromises.push(saveAptCache());
-    }
 
     if (fs.existsSync('/dev/kvm')) {
       await exec.exec("sudo", ["chmod", "666", "/dev/kvm"]);
@@ -474,26 +429,84 @@ async function main() {
         fs.mkdirSync(cacheDir, { recursive: true });
       }
 
-      try {
-        const restoreStart = Date.now();
-        restoredKey = await cache.restoreCache([cacheDir], cacheKey, restoreKeys);
-        const restoreElapsed = Date.now() - restoreStart;
-        core.info(`cache.restoreCache() took ${restoreElapsed}ms`);
-        if (restoredKey) {
-          core.info(`Cache restored: ${restoredKey}`);
-          if (debug === 'true' && cacheDir && fs.existsSync(cacheDir)) {
-            core.info('Restored cache dir preview (debug)');
-            try {
-              await exec.exec('ls', ['-R', cacheDir]);
-            } catch (e) {
-              core.warning(`Listing restored cache dir failed: ${e.message}`);
-            }
-          }
-        } else {
-          core.info('No cache hit for VM cache directory');
+      const originalWrite = process.stdout.write;
+      let cacheRestoreFailed = false;
+      process.stdout.write = function (chunk) {
+        const msg = Buffer.isBuffer(chunk) ? chunk.toString() : (typeof chunk === 'string' ? chunk : '');
+        if (msg.includes('::warning::') && (msg.includes('Failed to restore') || msg.includes('Failed to download'))) {
+          cacheRestoreFailed = true;
         }
-      } catch (e) {
-        core.warning(`Cache restore failed: ${e.message}`);
+        return originalWrite.apply(process.stdout, arguments);
+      };
+
+      try {
+        const maxRetries = 2;
+        for (let i = 0; i <= maxRetries; i++) {
+          cacheRestoreFailed = false; // Reset flag for each attempt
+          try {
+            if (i > 0) {
+              core.info(`Retry ${i}/${maxRetries}: Cleaning cache directory...`);
+              try {
+                if (fs.existsSync(cacheDir)) {
+                  fs.readdirSync(cacheDir).forEach(file => {
+                    fs.rmSync(path.join(cacheDir, file), { recursive: true, force: true });
+                  });
+                }
+              } catch (err) {
+                core.warning(`Clean cache directory failed: ${err.message}`);
+              }
+            }
+
+            const restoreStart = Date.now();
+            restoredKey = await cache.restoreCache([cacheDir], cacheKey, restoreKeys);
+            const restoreElapsed = Date.now() - restoreStart;
+            core.info(`cache.restoreCache() took ${restoreElapsed}ms`);
+
+            if (restoredKey) {
+              core.info(`Cache restored: ${restoredKey}`);
+              if (debug === 'true' && cacheDir && fs.existsSync(cacheDir)) {
+                core.info('Restored cache dir preview (debug)');
+                try {
+                  await exec.exec('ls', ['-R', cacheDir]);
+                } catch (e) {
+                  core.warning(`Listing restored cache dir failed: ${e.message}`);
+                }
+              }
+              break;
+            } else if (!cacheRestoreFailed) {
+              core.info('No cache hit for VM cache directory (Not found on server)');
+              break;
+            } else {
+              // restoredKey is undefined AND cacheRestoreFailed is true -> hit but error
+              if (i < maxRetries) {
+                core.warning(`Cache restore failed (hit but error during extraction), retrying...`);
+                continue;
+              }
+              core.info('Cache restore failed after multiple attempts.');
+            }
+          } catch (e) {
+            if (i < maxRetries) {
+              core.warning(`Cache restore attempt ${i + 1} failed with exception: ${e.message}. Retrying...`);
+              continue;
+            }
+            core.warning(`Cache restore failed after ${maxRetries + 1} attempts: ${e.message}`);
+          }
+        }
+      } finally {
+        process.stdout.write = originalWrite;
+      }
+
+      if (!restoredKey) {
+        core.info(`Cleaning cache directory one last time for a fresh start...`);
+        try {
+          if (fs.existsSync(cacheDir)) {
+            fs.readdirSync(cacheDir).forEach(file => {
+              fs.rmSync(path.join(cacheDir, file), { recursive: true, force: true });
+            });
+          }
+        } catch (err) {
+          core.warning(`Final clean cache directory failed: ${err.message}`);
+        }
       }
 
       // Pass cache dir to anyvm
