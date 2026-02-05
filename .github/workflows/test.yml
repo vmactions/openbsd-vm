@@ -531,6 +531,75 @@ jobs:
 
 
 
+  testerr:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-24.04
+    name: test default error OpenBSD
+    env:
+      MYTOKEN : ${{ secrets.MYTOKEN }}
+      MYTOKEN2: "value2"
+      SEC_VBOX : ${{ vars.SEC_VBOX }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    steps:
+    - uses: actions/checkout@v6
+    - name: Test in OpenBSD
+      id: testerr
+      continue-on-error: true 
+      uses: vmactions/openbsd-vm@48f0a211e146da9e35ef9a7c568465851777ab9c
+      with:
+        envs: 'MYTOKEN MYTOKEN2'
+        prepare: |
+          pkg_add curl
+        mem: 4096
+        usesh: true
+        debug: true
+        run: |
+          echo "this is an error"
+          exit 1
+    - name: Verify that the previous step failed
+      if: steps.testerr.outcome != 'failure'
+      run: |
+        echo "The step was expected to fail, but it succeeded!"
+        exit 1
+
+  testpass:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-24.04
+    name: test default success OpenBSD
+    env:
+      MYTOKEN : ${{ secrets.MYTOKEN }}
+      MYTOKEN2: "value2"
+      SEC_VBOX : ${{ vars.SEC_VBOX }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    steps:
+    - uses: actions/checkout@v6
+    - name: Test in OpenBSD
+      id: testpass
+      continue-on-error: true 
+      uses: vmactions/openbsd-vm@48f0a211e146da9e35ef9a7c568465851777ab9c
+      with:
+        envs: 'MYTOKEN MYTOKEN2'
+        prepare: |
+          pkg_add curl
+        mem: 4096
+        usesh: true
+        debug: true
+        run: |
+          echo "this is a normal command"
+          exit 0
+    - name: Verify that the previous step succeeded
+      if: steps.testpass.outcome != 'success'
+      run: |
+        echo "The step was expected to succeed, but it failed!"
+        exit 1
+
+
+
+
+
+
 
 
 

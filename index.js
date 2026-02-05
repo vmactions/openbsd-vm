@@ -431,9 +431,14 @@ async function main() {
 
       try {
         const restoreStart = Date.now();
-        restoredKey = await cache.restoreCache([cacheDir], cacheKey, restoreKeys);
+        try {
+          restoredKey = await cache.restoreCache([cacheDir], cacheKey, restoreKeys);
+        } catch (e) {
+          core.warning(`cache.restoreCache() threw error: ${e.message}`);
+        }
         const restoreElapsed = Date.now() - restoreStart;
         core.info(`cache.restoreCache() took ${restoreElapsed}ms`);
+
         if (restoredKey) {
           core.info(`Cache restored: ${restoredKey}`);
           if (debug === 'true' && cacheDir && fs.existsSync(cacheDir)) {
@@ -445,13 +450,28 @@ async function main() {
             }
           }
         } else {
-          core.info('No cache hit for VM cache directory');
+          // Detect if restore failed silently but left files (e.g. tar error)
+          const files = fs.readdirSync(cacheDir).filter(f => f !== '.' && f !== '..');
+          if (files.length > 0) {
+            core.warning(`Cache hit might have occurred but restoration failed (corrupted or partial download). Clearing cache directory.`);
+            try {
+              fs.rmSync(cacheDir, { recursive: true, force: true });
+              fs.mkdirSync(cacheDir, { recursive: true });
+            } catch (err) {
+              core.warning(`Failed to clear corrupted cache directory: ${err.message}`);
+            }
+          } else {
+            core.info('No cache hit for VM cache directory');
+          }
         }
       } catch (e) {
-        core.warning(`Cache restore failed: ${e.message}`);
+        core.warning(`Cache restore process failed: ${e.message}`);
+      }
+
+      if (!restoredKey) {
         try {
           if (cacheDir && fs.existsSync(cacheDir)) {
-            core.info(`Clearing cache directory: ${cacheDir}`);
+            core.info(`Clearing cache directory for a fresh start: ${cacheDir}`);
             fs.rmSync(cacheDir, { recursive: true, force: true });
             fs.mkdirSync(cacheDir, { recursive: true });
           }
@@ -578,8 +598,6 @@ async function main() {
             core.info('Skip cache save (cache was restored or directory missing)');
           }
         } catch (e) {
-          // Ignore "cache already exists" or "cache entry not found" errors
-          // These are common and non-fatal (e.g., race conditions, cache already saved)
           if (e.message && (e.message.includes('cache entry not found') ||
             e.message.includes('already exists') ||
             e.message.includes('Cache already exists'))) {
@@ -695,6 +713,8 @@ async function main() {
           vncLink = fs.readFileSync(remoteVncLinkFile, 'utf8').split('\n')[0].trim();
         }
         await handleErrorWithDebug(sshHost, vncLink, debug);
+      } else {
+        throw err;
       }
     }
 
@@ -713,6 +733,8 @@ async function main() {
           vncLink = fs.readFileSync(remoteVncLinkFile, 'utf8').split('\n')[0].trim();
         }
         await handleErrorWithDebug(sshHost, vncLink, debug);
+      } else {
+        throw err;
       }
     }
 
