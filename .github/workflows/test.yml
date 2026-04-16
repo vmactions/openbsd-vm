@@ -91,7 +91,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@22f838361840451e9180cc4069bc0164aa82db49
+      uses: vmactions/openbsd-vm@7007a55d61068ddeea0f1492b54a2454052f49be
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -223,7 +223,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@22f838361840451e9180cc4069bc0164aa82db49
+      uses: vmactions/openbsd-vm@7007a55d61068ddeea0f1492b54a2454052f49be
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -351,7 +351,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@22f838361840451e9180cc4069bc0164aa82db49
+      uses: vmactions/openbsd-vm@7007a55d61068ddeea0f1492b54a2454052f49be
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -468,7 +468,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@22f838361840451e9180cc4069bc0164aa82db49
+      uses: vmactions/openbsd-vm@7007a55d61068ddeea0f1492b54a2454052f49be
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -527,6 +527,127 @@ jobs:
 
 
 
+
+
+
+  testcustomshell:
+    strategy:
+      fail-fast: false
+      matrix:
+        release: [ "7.7", "7.8"
+, ""]
+        arch: [ "aarch64", "", "riscv64"]
+        runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
+        exclude:
+          - runs: "ubuntu-24.04-arm"
+            arch: ""
+          - runs: "ubuntu-24.04-arm"
+            arch: "riscv64"
+
+
+
+    runs-on: ${{ matrix.runs }}
+    name: customshell OpenBSD
+    env:
+      MYTOKEN : ${{ secrets.MYTOKEN }}
+      MYTOKEN2: "value2"
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    steps:
+    - uses: actions/checkout@v6
+    - name: Check arch
+      id: check
+      run: |
+        _release="${{ matrix.release }}"
+        if [ -z "$_release" ]; then
+          . conf/default.release.conf
+          _release="$DEFAULT_RELEASE"
+        fi
+
+        _arch="${{ matrix.arch }}"
+        if [ "${_arch}" = "x86_64" ]; then
+          _arch=""
+        fi
+
+        if [ -z "${_arch}" ]; then
+          #ok, go ahead
+          echo "arch is empty"
+          echo "run=true" >> $GITHUB_OUTPUT
+        elif [ -e "conf/${_release}-${_arch}.conf" ]; then
+          #ok, go ahead
+          echo "conf exists: conf/${_release}-${_arch}.conf"
+          if [[ "$(echo "OpenBSD" | tr '[:upper:]' '[:lower:]')-${_arch}" == "freebsd-riscv64" ]]; then
+            echo "The OpenBSD-${_arch} doesn't support rsync, skip."
+            echo "run=false" >> $GITHUB_OUTPUT
+          else
+            echo "run=true" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "The release ${_release} doesn't support ${_arch}, skip."
+          echo "run=false" >> $GITHUB_OUTPUT
+        fi
+    - name: Test in OpenBSD
+      if: ${{ steps.check.outputs.run == 'true' }}
+      id: test
+      uses: vmactions/openbsd-vm@7007a55d61068ddeea0f1492b54a2454052f49be
+      with:
+        envs: 'MYTOKEN MYTOKEN2'
+        prepare: |
+          pkg_add curl
+        mem: 4096
+        release: ${{ matrix.release }}
+        arch: ${{ matrix.arch }}
+        nat: |
+          "20022": "22"
+          "8080": "80"
+          "8443": "443"
+          udp:"8081": "80"
+        usesh: true
+        debug: true
+        custom-shell-name: vmsh
+        run: |
+          env
+          echo "TEST_ENV=abc" >>${GITHUB_ENV}
+          tree /home/runner/work
+          pwd
+          ls -lah
+          whoami
+          env
+          sysctl hw.model
+          sysctl hw.ncpu
+          sysctl hw.physmem
+          sysctl hw.usermem
+          
+    - name: Test NAT
+      if: ${{ steps.check.outputs.run == 'true' }}
+      env:
+        VM_USER: ""
+      run: |
+        set -e
+        echo "TEST_ENV=$TEST_ENV"
+        [ "$TEST_ENV" = "abc" ]
+        ssh -v  -p 20022 ${VM_USER:-root}@localhost  "uname -a;whoami;pwd"
+
+    - name: Test custom shell
+      if: ${{ steps.check.outputs.run == 'true' }}
+      shell: vmsh {0}
+      run: |
+        pwd
+          tree /home/runner/work
+          pwd
+          ls -lah
+          whoami
+          env
+          sysctl hw.model
+          sysctl hw.ncpu
+          sysctl hw.physmem
+          sysctl hw.usermem
+          
+
+
+
+
+
+
   testerr:
     strategy:
       fail-fast: false
@@ -537,7 +658,7 @@ jobs:
     - name: Test in OpenBSD
       id: testerr
       continue-on-error: true 
-      uses: vmactions/openbsd-vm@22f838361840451e9180cc4069bc0164aa82db49
+      uses: vmactions/openbsd-vm@7007a55d61068ddeea0f1492b54a2454052f49be
       with:
         usesh: true
         debug: true
@@ -565,7 +686,7 @@ jobs:
     - name: Test in OpenBSD
       id: testpass
       continue-on-error: true 
-      uses: vmactions/openbsd-vm@22f838361840451e9180cc4069bc0164aa82db49
+      uses: vmactions/openbsd-vm@7007a55d61068ddeea0f1492b54a2454052f49be
       with:
         usesh: true
         debug: true
