@@ -91,7 +91,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@d7d892b7b9ba97ed2747b0fc201be65037d64c3e
+      uses: vmactions/openbsd-vm@8d42de90b7ec61d57bad49689f292d275de124e6
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -223,7 +223,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@d7d892b7b9ba97ed2747b0fc201be65037d64c3e
+      uses: vmactions/openbsd-vm@8d42de90b7ec61d57bad49689f292d275de124e6
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -351,7 +351,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@d7d892b7b9ba97ed2747b0fc201be65037d64c3e
+      uses: vmactions/openbsd-vm@8d42de90b7ec61d57bad49689f292d275de124e6
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -468,7 +468,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@d7d892b7b9ba97ed2747b0fc201be65037d64c3e
+      uses: vmactions/openbsd-vm@8d42de90b7ec61d57bad49689f292d275de124e6
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -588,7 +588,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ steps.check.outputs.run == 'true' }}
       id: test
-      uses: vmactions/openbsd-vm@d7d892b7b9ba97ed2747b0fc201be65037d64c3e
+      uses: vmactions/openbsd-vm@8d42de90b7ec61d57bad49689f292d275de124e6
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -658,7 +658,7 @@ jobs:
     - name: Test in OpenBSD
       id: testerr
       continue-on-error: true 
-      uses: vmactions/openbsd-vm@d7d892b7b9ba97ed2747b0fc201be65037d64c3e
+      uses: vmactions/openbsd-vm@8d42de90b7ec61d57bad49689f292d275de124e6
       with:
         usesh: true
         debug: true
@@ -686,7 +686,7 @@ jobs:
     - name: Test in OpenBSD
       id: testpass
       continue-on-error: true 
-      uses: vmactions/openbsd-vm@d7d892b7b9ba97ed2747b0fc201be65037d64c3e
+      uses: vmactions/openbsd-vm@8d42de90b7ec61d57bad49689f292d275de124e6
       with:
         usesh: true
         debug: true
