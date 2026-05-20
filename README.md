@@ -20,6 +20,7 @@ All the supported releases are here:
 
 | Release | x86_64  | aarch64(arm64) | riscv64 |
 |---------|---------|---------|----------------|
+| 7.9     |  ✅     |   ✅   |           ✅  |
 | 7.8     |  ✅     |   ✅   |           ✅  |
 | 7.7     |  ✅     |   ✅   |           ✅  |
 | 7.6     |  ✅     |   ✅   |           ❌  |
@@ -200,7 +201,7 @@ The VM is using all the cpu cores of the host by default, you can use `cpu` opti
 
 ## 5. Select release
 
-It uses [the OpenBSD 7.8](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
+It uses [the OpenBSD 7.9](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
 
 ```yaml
 ...
