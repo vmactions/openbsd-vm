@@ -1,7 +1,6 @@
 # Run GitHub CI in OpenBSD 
 
 ![Test](https://github.com/vmactions/openbsd-vm/workflows/Test/badge.svg)
-[![Release](https://img.shields.io/github/v/release/vmactions/openbsd-vm?include_prereleases&sort=semver&display_name=tag)](https://github.com/vmactions/openbsd-vm/releases)
 
 
 
@@ -376,8 +375,7 @@ We use Qemu to run the OpenBSD VM.
 
 # Upcoming features:
 
-1. Support other architectures, eg: sparc64 or powerpc64.
-2. Support MacOS runner and Windows runner.
+1. Support MacOS runner and Windows runner.
 
 
 
