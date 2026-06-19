@@ -313,7 +313,20 @@ async function install(arch, sync, builderVersion, debug, disableCache) {
     } else if (arch === 'aarch64' || arch === 'arm64') {
       pkgs.push("qemu-system-arm", "qemu-efi-aarch64", "ipxe-qemu");
     } else {
-      pkgs.push("qemu-system-misc", "u-boot-qemu", "ipxe-qemu");
+      // qemu-system-misc covers riscv64 (and the other "misc" targets), but
+      // ppc64 / sparc64 / s390x ship in their own packages on Ubuntu. These
+      // only *recommend* seabios (which --no-install-recommends skips), unlike
+      // qemu-system-x86 which depends on it; install it explicitly so the VGA
+      // romfiles (e.g. vgabios-stdvga.bin, used by the pseries default display)
+      // are present.
+      pkgs.push("qemu-system-misc", "u-boot-qemu", "ipxe-qemu", "seabios");
+      if (arch === 'powerpc64' || arch === 'ppc64' || arch === 'ppc64le') {
+        pkgs.push("qemu-system-ppc");
+      } else if (arch === 'sparc64' || arch === 'sparc') {
+        pkgs.push("qemu-system-sparc");
+      } else if (arch === 's390x') {
+        pkgs.push("qemu-system-s390x");
+      }
     }
 
     if (sync === 'nfs') {
@@ -477,19 +490,15 @@ async function main() {
     const envs = core.getInput("envs");
     const prepare = core.getInput("prepare");
     const run = core.getInput("run");
-    let sync = core.getInput("sync").toLowerCase() || 'rsync';
+    // The effective default is resolved against the conf's VM_SYNC_METHODS
+    // once the config is loaded (see below); empty here means "use the conf
+    // default".
+    let sync = core.getInput("sync").toLowerCase();
     const copyback = core.getInput("copyback").toLowerCase();
     const syncTime = core.getInput("sync-time").toLowerCase();
     const disableCache = core.getInput("disable-cache").toLowerCase() === 'true';
     const debugOnError = core.getInput("debug-on-error").toLowerCase() === 'true';
     const vncPassword = core.getInput("vnc-password");
-
-    // BlissOS (Android) guests ship no rsync and have no package manager to
-    // install one over ssh; scp (baked into the image) is the only file-copy
-    // channel, so the rsync default silently degrades to scp there.
-    if (!core.getInput("sync") && inputOsName.includes('blissos')) {
-      sync = 'scp';
-    }
 
     const work = path.join(process.env["HOME"], "work");
     let vmwork = path.join(process.env["HOME"], "work");
@@ -537,6 +546,23 @@ async function main() {
     const anyvmVersion = env['ANYVM_VERSION'];
     const builderVersion = env['BUILDER_VERSION'];
     const osName = inputOsName;
+
+    // VM_SYNC_METHODS is the builder's declared support list for this
+    // release/arch (comma separated, first = default), baked into the conf.
+    // When the conf doesn't declare it (e.g. an older builder version that
+    // predates this field), keep the legacy behavior: default to rsync and
+    // don't reject anything.
+    const syncMethods = (env['VM_SYNC_METHODS'] || '')
+      .split(',').map((m) => m.trim()).filter(Boolean);
+    if (!sync) {
+      sync = syncMethods[0] || 'rsync';
+    } else if (sync !== 'no' && syncMethods.length && !syncMethods.includes(sync)) {
+      // Only reject when the conf actually declares a list and this method is
+      // not in it. 'no' (do-not-sync) is always allowed.
+      throw new Error(
+        `sync method '${sync}' is not supported by ${osName} ${confName}. ` +
+        `Supported methods: ${syncMethods.join(', ')}`);
+    }
 
     core.startGroup("Configuration AnyVM.org");
     core.info(`Using ANYVM_VERSION: ${anyvmVersion}`);
