@@ -67,7 +67,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
       id: test
-      uses: vmactions/openbsd-vm@965c3d40056de496ac7507a34cfb2a2dabe6bd20
+      uses: vmactions/openbsd-vm@2a8a038199e9fbfed0d066c154e9a7668cd80d45
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -169,7 +169,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
       id: test
-      uses: vmactions/openbsd-vm@965c3d40056de496ac7507a34cfb2a2dabe6bd20
+      uses: vmactions/openbsd-vm@2a8a038199e9fbfed0d066c154e9a7668cd80d45
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -279,7 +279,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
       id: test
-      uses: vmactions/openbsd-vm@965c3d40056de496ac7507a34cfb2a2dabe6bd20
+      uses: vmactions/openbsd-vm@2a8a038199e9fbfed0d066c154e9a7668cd80d45
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -371,7 +371,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       id: test
-      uses: vmactions/openbsd-vm@965c3d40056de496ac7507a34cfb2a2dabe6bd20
+      uses: vmactions/openbsd-vm@2a8a038199e9fbfed0d066c154e9a7668cd80d45
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -468,7 +468,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       id: test
-      uses: vmactions/openbsd-vm@965c3d40056de496ac7507a34cfb2a2dabe6bd20
+      uses: vmactions/openbsd-vm@2a8a038199e9fbfed0d066c154e9a7668cd80d45
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -539,7 +539,7 @@ jobs:
     - name: Test in OpenBSD
       id: testerr
       continue-on-error: true
-      uses: vmactions/openbsd-vm@965c3d40056de496ac7507a34cfb2a2dabe6bd20
+      uses: vmactions/openbsd-vm@2a8a038199e9fbfed0d066c154e9a7668cd80d45
       with:
         usesh: true
         debug: true
@@ -567,7 +567,7 @@ jobs:
     - name: Test in OpenBSD
       id: testpass
       continue-on-error: true
-      uses: vmactions/openbsd-vm@965c3d40056de496ac7507a34cfb2a2dabe6bd20
+      uses: vmactions/openbsd-vm@2a8a038199e9fbfed0d066c154e9a7668cd80d45
       with:
         usesh: true
         debug: true
