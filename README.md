@@ -19,23 +19,13 @@ All the supported releases are here:
 
 | Release | x86_64  | aarch64(arm64) | riscv64 | sparc64 |
 |---------|---------|---------|----------------|---------|
-| 7.9     |  ✅     |   ✅   |           ✅  |   ✅   |
-| 7.9-xfce  |  ✅     |   —   |           —  |   —   |
-| 7.9-gnome |  ✅     |   —   |           —  |   —   |
-| 7.9-kde6  |  ✅     |   —   |           —  |   —   |
-| 7.9-mate  |  ✅     |   —   |           —  |   —   |
-| 7.9-lxqt  |  ✅     |   —   |           —  |   —   |
-| 7.9-lumina  |  ✅     |   —   |           —  |   —   |
-| 7.9-enlightenment  |  ✅     |   —   |           —  |   —   |
-| 7.8     |  ✅     |   ✅   |           ✅  |   —   |
-| 7.7     |  ✅     |   ✅   |           ✅  |   —   |
-| 7.6     |  ✅     |   ✅   |           —  |   —   |
-| 7.5     |  ✅     |   ✅   |           —  |   —   |
-| 7.4     |  ✅     |   ✅   |           —  |   —   |
-| 7.3     |  ✅     |   ✅   |           —  |   —   |
-
-
-
+| 7.9     |  ✅ (rsync,scp,sshfs,nfs)     |   ✅ (rsync,scp,sshfs,nfs)   |  ✅ (rsync,scp,sshfs,nfs)  |   ✅ (rsync,scp,sshfs,nfs)   |
+| 7.8     |  ✅ (rsync,scp,sshfs,nfs)     |   ✅ (rsync,scp,sshfs,nfs)   |  ✅ (rsync,scp,sshfs,nfs)  |   —   |
+| 7.7     |  ✅ (rsync,scp,sshfs,nfs)     |   ✅ (rsync,scp,sshfs,nfs)   |  ✅ (rsync,scp,sshfs,nfs)  |   —   |
+| 7.6     |  ✅ (rsync,scp,sshfs,nfs)     |   ✅ (rsync,scp,sshfs,nfs)   |  —  |   —   |
+| 7.5     |  ✅ (rsync,scp,sshfs,nfs)     |   ✅ (rsync,scp,sshfs,nfs)   |  —  |   —   |
+| 7.4     |  ✅ (rsync,scp,sshfs,nfs)     |   ✅ (rsync,scp,sshfs,nfs)   |  —  |   —   |
+| 7.3     |  ✅ (rsync,scp,sshfs,nfs)     |   ✅ (rsync,scp,sshfs,nfs)   |  —  |   —   |
 
 
 
