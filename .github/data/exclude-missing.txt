@@ -17,15 +17,11 @@
           - release: "7.9"
             arch: powerpc64
           - release: "7.9"
-            arch: sparc64
-          - release: "7.9"
             arch: ppc64le
           - release: "7.9"
             arch: s390x
           - release: ""
             arch: powerpc64
-          - release: ""
-            arch: sparc64
           - release: ""
             arch: ppc64le
           - release: ""

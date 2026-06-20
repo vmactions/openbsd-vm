@@ -64,15 +64,11 @@ jobs:
           - release: "7.9"
             arch: powerpc64
           - release: "7.9"
-            arch: sparc64
-          - release: "7.9"
             arch: ppc64le
           - release: "7.9"
             arch: s390x
           - release: ""
             arch: powerpc64
-          - release: ""
-            arch: sparc64
           - release: ""
             arch: ppc64le
           - release: ""
@@ -89,7 +85,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 #    - name: Creating Web console
-#      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
+#      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
 #      uses: vmactions/cf-tunnel@v0
 #      id: tunnel
 #      with:
@@ -97,9 +93,9 @@ jobs:
 #        port: 8000
 
     - name: Test in OpenBSD
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
       id: test
-      uses: vmactions/openbsd-vm@c0ea8ad23a712bae0d99bce4c4cc24c338587a3d
+      uses: vmactions/openbsd-vm@b779e0a63093d33db100a12a003a97911d1ebc14
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -137,7 +133,7 @@ jobs:
           
 
     - name: Test NAT
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
       env:
         VM_USER: ""
       run: |
@@ -146,7 +142,7 @@ jobs:
         [ "$TEST_ENV" = "abc" ]
         ssh -v -p 20022 ${VM_USER:-root}@localhost  "uname -a;whoami;pwd"
     - name: Test custom shell
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
       shell: openbsd {0}
       run: |
         pwd
@@ -206,15 +202,11 @@ jobs:
           - release: "7.9"
             arch: powerpc64
           - release: "7.9"
-            arch: sparc64
-          - release: "7.9"
             arch: ppc64le
           - release: "7.9"
             arch: s390x
           - release: ""
             arch: powerpc64
-          - release: ""
-            arch: sparc64
           - release: ""
             arch: ppc64le
           - release: ""
@@ -231,9 +223,9 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - name: Test in OpenBSD
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
       id: test
-      uses: vmactions/openbsd-vm@c0ea8ad23a712bae0d99bce4c4cc24c338587a3d
+      uses: vmactions/openbsd-vm@b779e0a63093d33db100a12a003a97911d1ebc14
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -271,7 +263,7 @@ jobs:
           
 
     - name: Test NAT
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
       env:
         VM_USER: ""
       run: |
@@ -283,7 +275,7 @@ jobs:
         [ "$TEST_ENV" = "abc" ]
         ssh -v -p 20022 ${VM_USER:-root}@localhost "uname -a;whoami;pwd"
     - name: Test custom shell
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
       shell: openbsd {0}
       run: |
         pwd
@@ -341,15 +333,11 @@ jobs:
           - release: "7.9"
             arch: powerpc64
           - release: "7.9"
-            arch: sparc64
-          - release: "7.9"
             arch: ppc64le
           - release: "7.9"
             arch: s390x
           - release: ""
             arch: powerpc64
-          - release: ""
-            arch: sparc64
           - release: ""
             arch: ppc64le
           - release: ""
@@ -366,16 +354,16 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 #    - name: Creating Web console
-#      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
+#      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
 #      uses: vmactions/cf-tunnel@v0
 #      id: tunnel
 #      with:
 #        protocol: http
 #        port: 8000
     - name: Test in OpenBSD
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
       id: test
-      uses: vmactions/openbsd-vm@c0ea8ad23a712bae0d99bce4c4cc24c338587a3d
+      uses: vmactions/openbsd-vm@b779e0a63093d33db100a12a003a97911d1ebc14
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -415,7 +403,7 @@ jobs:
           
 
     - name: Test files
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
       env:
         VM_USER: ""
       run: |
@@ -472,15 +460,11 @@ jobs:
           - release: "7.9"
             arch: powerpc64
           - release: "7.9"
-            arch: sparc64
-          - release: "7.9"
             arch: ppc64le
           - release: "7.9"
             arch: s390x
           - release: ""
             arch: powerpc64
-          - release: ""
-            arch: sparc64
           - release: ""
             arch: ppc64le
           - release: ""
@@ -497,9 +481,9 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - name: Test in OpenBSD
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       id: test
-      uses: vmactions/openbsd-vm@c0ea8ad23a712bae0d99bce4c4cc24c338587a3d
+      uses: vmactions/openbsd-vm@b779e0a63093d33db100a12a003a97911d1ebc14
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -530,7 +514,7 @@ jobs:
           sysctl hw.usermem
           
     - name: Test NAT
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       env:
         VM_USER: ""
       run: |
@@ -540,7 +524,7 @@ jobs:
         ssh -v  -p 20022 ${VM_USER:-root}@localhost  "uname -a;whoami;pwd"
 
     - name: Test custom shell
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       shell: openbsd {0}
       run: |
         pwd
@@ -601,15 +585,11 @@ jobs:
           - release: "7.9"
             arch: powerpc64
           - release: "7.9"
-            arch: sparc64
-          - release: "7.9"
             arch: ppc64le
           - release: "7.9"
             arch: s390x
           - release: ""
             arch: powerpc64
-          - release: ""
-            arch: sparc64
           - release: ""
             arch: ppc64le
           - release: ""
@@ -626,9 +606,9 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - name: Test in OpenBSD
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       id: test
-      uses: vmactions/openbsd-vm@c0ea8ad23a712bae0d99bce4c4cc24c338587a3d
+      uses: vmactions/openbsd-vm@b779e0a63093d33db100a12a003a97911d1ebc14
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -659,7 +639,7 @@ jobs:
           sysctl hw.usermem
           
     - name: Test NAT
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       env:
         VM_USER: ""
       run: |
@@ -669,7 +649,7 @@ jobs:
         ssh -v  -p 20022 ${VM_USER:-root}@localhost  "uname -a;whoami;pwd"
 
     - name: Test custom shell
-      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":[],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
+      if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       shell: vmsh {0}
       run: |
         pwd
@@ -699,7 +679,7 @@ jobs:
     - name: Test in OpenBSD
       id: testerr
       continue-on-error: true
-      uses: vmactions/openbsd-vm@c0ea8ad23a712bae0d99bce4c4cc24c338587a3d
+      uses: vmactions/openbsd-vm@b779e0a63093d33db100a12a003a97911d1ebc14
       with:
         usesh: true
         debug: true
@@ -727,7 +707,7 @@ jobs:
     - name: Test in OpenBSD
       id: testpass
       continue-on-error: true
-      uses: vmactions/openbsd-vm@c0ea8ad23a712bae0d99bce4c4cc24c338587a3d
+      uses: vmactions/openbsd-vm@b779e0a63093d33db100a12a003a97911d1ebc14
       with:
         usesh: true
         debug: true
