@@ -58,7 +58,7 @@ jobs:
           pkg_add curl
 
         run: |
-          tree /home/runner/work
+          ls -lah /home/runner/work
           pwd
           ls -lah
           whoami
