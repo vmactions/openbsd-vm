@@ -77,7 +77,12 @@ jobs:
               continue
             fi
             url="https://raw.githubusercontent.com/anyvm-org/${os}-builder/v${bv}/conf/${os}-${base}.conf"
-            confdata="$(curl -fsSL "$url" 2>/dev/null)"
+            # Old builder pins (<2.0.0, e.g. openbsd 7.2-7.6) have no tag in
+            # anyvm-org, so this curl 404s; the step runs under bash -e and a
+            # bare command substitution would abort the whole job (exit 22).
+            # Degrade to an empty confdata -> both fields fall into their
+            # "leaving conf as-is" branches, same as the legacy behavior.
+            confdata="$(curl -fsSL "$url" 2>/dev/null || true)"
             methods="$(printf '%s\n' "$confdata" | sed -n 's/^[[:space:]]*VM_SYNC_METHODS=//p' | tr -d '"' | tail -n 1)"
             if [ -z "$methods" ]; then
               echo "${base}: no VM_SYNC_METHODS in ${url}, leaving conf as-is"
