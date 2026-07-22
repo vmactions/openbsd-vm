@@ -6,6 +6,8 @@
             arch: ppc64le
           - release: "7.7"
             arch: s390x
+          - release: "7.7"
+            arch: i386
           - release: "7.8"
             arch: powerpc64
           - release: "7.8"
@@ -14,15 +16,21 @@
             arch: ppc64le
           - release: "7.8"
             arch: s390x
+          - release: "7.8"
+            arch: i386
           - release: "7.9"
             arch: powerpc64
           - release: "7.9"
             arch: ppc64le
           - release: "7.9"
             arch: s390x
+          - release: "7.9"
+            arch: i386
           - release: ""
             arch: powerpc64
           - release: ""
             arch: ppc64le
           - release: ""
             arch: s390x
+          - release: ""
+            arch: i386
