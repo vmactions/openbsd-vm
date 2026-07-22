@@ -105,7 +105,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[],"i386":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'sshfs') }}
       id: test
-      uses: vmactions/openbsd-vm@049d64bb5de6c3067fe0b4e1e57a8a7c127ae44f
+      uses: vmactions/openbsd-vm@5f2e4afd960ff4de8f95eb71354e26dd2ec7514d
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -266,7 +266,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[],"i386":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'nfs') }}
       id: test
-      uses: vmactions/openbsd-vm@049d64bb5de6c3067fe0b4e1e57a8a7c127ae44f
+      uses: vmactions/openbsd-vm@5f2e4afd960ff4de8f95eb71354e26dd2ec7514d
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -435,7 +435,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[],"i386":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'scp') }}
       id: test
-      uses: vmactions/openbsd-vm@049d64bb5de6c3067fe0b4e1e57a8a7c127ae44f
+      uses: vmactions/openbsd-vm@5f2e4afd960ff4de8f95eb71354e26dd2ec7514d
       with:
         envs: 'DEBUG MYTOKEN MYTOKEN2'
         prepare: |
@@ -605,7 +605,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[],"i386":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       id: test
-      uses: vmactions/openbsd-vm@049d64bb5de6c3067fe0b4e1e57a8a7c127ae44f
+      uses: vmactions/openbsd-vm@5f2e4afd960ff4de8f95eb71354e26dd2ec7514d
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -761,7 +761,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[],"i386":[]}')[matrix.arch == '' && 'x86_64' || matrix.arch], 'rsync') }}
       id: test
-      uses: vmactions/openbsd-vm@049d64bb5de6c3067fe0b4e1e57a8a7c127ae44f
+      uses: vmactions/openbsd-vm@5f2e4afd960ff4de8f95eb71354e26dd2ec7514d
       with:
         envs: 'MYTOKEN MYTOKEN2'
         prepare: |
@@ -889,7 +889,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[],"i386":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/openbsd-vm@049d64bb5de6c3067fe0b4e1e57a8a7c127ae44f
+      uses: vmactions/openbsd-vm@5f2e4afd960ff4de8f95eb71354e26dd2ec7514d
       with:
         mem: 4096
         usesh: true
@@ -954,7 +954,7 @@ jobs:
     - name: Test in OpenBSD
       if: ${{ contains(fromJSON('{"x86_64":["rsync","scp","sshfs","nfs"],"aarch64":["rsync","scp","sshfs","nfs"],"riscv64":["rsync","scp","sshfs","nfs"],"powerpc64":[],"sparc64":["rsync","scp","sshfs","nfs"],"ppc64le":[],"s390x":[],"i386":[]}')['x86_64'], 'rsync') }}
       id: test
-      uses: vmactions/openbsd-vm@049d64bb5de6c3067fe0b4e1e57a8a7c127ae44f
+      uses: vmactions/openbsd-vm@5f2e4afd960ff4de8f95eb71354e26dd2ec7514d
       with:
         mem: 4096
         usesh: true
@@ -1020,7 +1020,7 @@ jobs:
     - name: Test in OpenBSD
       id: testerr
       continue-on-error: true
-      uses: vmactions/openbsd-vm@049d64bb5de6c3067fe0b4e1e57a8a7c127ae44f
+      uses: vmactions/openbsd-vm@5f2e4afd960ff4de8f95eb71354e26dd2ec7514d
       with:
         usesh: true
         debug: true
@@ -1048,7 +1048,7 @@ jobs:
     - name: Test in OpenBSD
       id: testpass
       continue-on-error: true
-      uses: vmactions/openbsd-vm@049d64bb5de6c3067fe0b4e1e57a8a7c127ae44f
+      uses: vmactions/openbsd-vm@5f2e4afd960ff4de8f95eb71354e26dd2ec7514d
       with:
         usesh: true
         debug: true
