@@ -30,7 +30,7 @@ jobs:
       matrix:
         release: [ "7.7", "7.8", "7.9"
 , ""]
-        arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x"]
+        arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x", "i386"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         exclude:
           - runs: "ubuntu-24.04-arm"
@@ -45,6 +45,8 @@ jobs:
             arch: "ppc64le"
           - runs: "ubuntu-24.04-arm"
             arch: "s390x"
+          - runs: "ubuntu-24.04-arm"
+            arch: "i386"
           - release: "7.7"
             arch: powerpc64
           - release: "7.7"
@@ -189,7 +191,7 @@ jobs:
       matrix:
         release: [ "7.7", "7.8", "7.9"
 , ""]
-        arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x"]
+        arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x", "i386"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         exclude:
           - runs: "ubuntu-24.04-arm"
@@ -204,6 +206,8 @@ jobs:
             arch: "ppc64le"
           - runs: "ubuntu-24.04-arm"
             arch: "s390x"
+          - runs: "ubuntu-24.04-arm"
+            arch: "i386"
           - release: "7.7"
             arch: powerpc64
           - release: "7.7"
@@ -341,7 +345,7 @@ jobs:
       matrix:
         release: [ "7.7", "7.8", "7.9"
 , ""]
-        arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x"]
+        arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x", "i386"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         exclude:
           - runs: "ubuntu-24.04-arm"
@@ -356,6 +360,8 @@ jobs:
             arch: "ppc64le"
           - runs: "ubuntu-24.04-arm"
             arch: "s390x"
+          - runs: "ubuntu-24.04-arm"
+            arch: "i386"
           - release: "7.7"
             arch: powerpc64
           - release: "7.7"
@@ -507,7 +513,7 @@ jobs:
       matrix:
         release: [ "7.7", "7.8", "7.9"
 , ""]
-        arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x"]
+        arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x", "i386"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         disableCache: [ "", "true"]
         exclude:
@@ -523,6 +529,8 @@ jobs:
             arch: "ppc64le"
           - runs: "ubuntu-24.04-arm"
             arch: "s390x"
+          - runs: "ubuntu-24.04-arm"
+            arch: "i386"
           - release: "7.7"
             arch: powerpc64
           - release: "7.7"
@@ -654,7 +662,7 @@ jobs:
       matrix:
         release: [ "7.7", "7.8", "7.9"
 , ""]
-        arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x"]
+        arch: [ "aarch64", "", "riscv64", "powerpc64", "sparc64", "ppc64le", "s390x", "i386"]
         runs: [ "ubuntu-24.04", "ubuntu-24.04-arm"]
         exclude:
           - runs: "ubuntu-24.04-arm"
@@ -669,6 +677,8 @@ jobs:
             arch: "ppc64le"
           - runs: "ubuntu-24.04-arm"
             arch: "s390x"
+          - runs: "ubuntu-24.04-arm"
+            arch: "i386"
           - release: "7.7"
             arch: powerpc64
           - release: "7.7"
