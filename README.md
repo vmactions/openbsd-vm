@@ -62,22 +62,10 @@ All the supported releases are here:
 > **Note:** OpenBSD 7.3-7.6 (x86_64 and aarch64) are documented and
 > already tested elsewhere -- their images are served by the vmactions
 > fallback repo, and anyvm's own openbsd.yml test matrix already covers
-> them -- but this builder's own CI matrix does not build them, so they are
-> no-build rather than shelved: the table row and releases.json entry stay
-> (releases.json marks them "build": false). Verified against `git show
-> HEAD:.github/data/table.md`: every 7.3-7.6 row already showed a green
-> check for BOTH x86_64 and aarch64 with sync methods
-> "rsync,scp,sshfs,nfs", which matches each conf's own VM_SYNC_METHODS
-> exactly -- no discrepancy found between the hand-written HEAD cells and
-> the confs' actual sync methods.
-<!-- no-build: 7.3 -->
-<!-- no-build: 7.3-aarch64 -->
-<!-- no-build: 7.4 -->
-<!-- no-build: 7.4-aarch64 -->
-<!-- no-build: 7.5 -->
-<!-- no-build: 7.5-aarch64 -->
-<!-- no-build: 7.6 -->
-<!-- no-build: 7.6-aarch64 -->
+> them -- but this builder's own CI matrix does not build them: their tags
+> are deliberately left OUT of conf/all.release.conf (the hand-owned build
+> membership; the table row and releases.json entry stay, with
+> releases.json marking them "build": false).
 
 
 
