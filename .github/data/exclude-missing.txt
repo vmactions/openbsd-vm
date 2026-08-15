@@ -10,6 +10,8 @@
             arch: i386
           - release: "7.7"
             arch: loongarch64
+          - release: "7.7"
+            arch: armv7
           - release: "7.8"
             arch: powerpc64
           - release: "7.8"
@@ -22,6 +24,8 @@
             arch: i386
           - release: "7.8"
             arch: loongarch64
+          - release: "7.8"
+            arch: armv7
           - release: "7.9"
             arch: powerpc64
           - release: "7.9"
@@ -32,6 +36,8 @@
             arch: i386
           - release: "7.9"
             arch: loongarch64
+          - release: "7.9"
+            arch: armv7
           - release: ""
             arch: powerpc64
           - release: ""
@@ -42,3 +48,5 @@
             arch: i386
           - release: ""
             arch: loongarch64
+          - release: ""
+            arch: armv7
