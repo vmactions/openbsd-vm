@@ -584,11 +584,36 @@ async function install(arch, sync, builderVersion, debug, disableCache) {
       "-o", "Acquire::Languages=none",
     ];
 
-    // 1. Update with quiet mode
-    await exec.exec("sudo", ["apt-get", "update", "-q"], { silent: true });
+    // 1. Drop apt's needrestart hook. After every install it scans the running
+    // processes to report which services want restarting -- measured 3-4.7s on
+    // a runner that gets destroyed minutes later. The hook is a single
+    // DPkg::Post-Invoke line in this one file, so removing the file is enough.
+    // (No point touching man-db: the runner image already ships
+    // man-db/auto-update false, so that trigger is a no-op before we start.)
+    await exec.exec("sudo", ["rm", "-f", "/etc/apt/apt.conf.d/99needrestart"],
+      { silent: true, ignoreReturnCode: true });
 
-    // 2. Install the packages
-    await exec.exec("sudo", ["apt-get", "install", "-y", "-q", ...aptOpts, "--no-install-recommends", ...pkgs]);
+    // 2. Install the packages straight off the preinstalled apt index. The
+    // runner image keeps /var/lib/apt/lists (actions/runner-images cleanup.sh
+    // only runs 'apt-get clean'), so the index resolves without a refresh:
+    // 266/266 jobs on run 32203913004 installed without ever reaching the
+    // retry in step 3, saving a median 5.6s each.
+    //
+    // Under observation: that same run had 16/266 jobs whose mirror download
+    // dropped below 3847 kB/s (worst 140 kB/s), a rate not seen in any of 375
+    // pre-change samples. Cause unproven -- no sibling repo ran that day, so
+    // the mirror's own state could not be controlled for. Re-check the
+    // download-rate spread over the next runs before calling this settled.
+    const installArgs = ["apt-get", "install", "-y", "-q", ...aptOpts, "--no-install-recommends", ...pkgs];
+    const installRc = await exec.exec("sudo", installArgs, { ignoreReturnCode: true });
+
+    // 3. Fall back to a refreshed index and retry. Not silent, and not
+    // ignoreReturnCode: a failure here is a real failure.
+    if (installRc !== 0) {
+      core.info(`apt-get install failed against the preinstalled index (exit ${installRc}); refreshing it and retrying.`);
+      await exec.exec("sudo", ["apt-get", "update", "-q"], { silent: true });
+      await exec.exec("sudo", installArgs);
+    }
 
     if (fs.existsSync('/dev/kvm')) {
       await exec.exec("sudo", ["chmod", "666", "/dev/kvm"]);
