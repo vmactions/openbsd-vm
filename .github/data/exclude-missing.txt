@@ -38,15 +38,3 @@
             arch: loongarch64
           - release: "7.9"
             arch: armv7
-          - release: ""
-            arch: powerpc64
-          - release: ""
-            arch: ppc64le
-          - release: ""
-            arch: s390x
-          - release: ""
-            arch: i386
-          - release: ""
-            arch: loongarch64
-          - release: ""
-            arch: armv7
