@@ -38,6 +38,7 @@ All the supported releases are here:
 
 | Release | x86_64 | aarch64(arm64) | riscv64 | sparc64 |
 |---------|---------|---------|---------|---------|
+| 8.0 | ✅ (rsync,scp,sshfs,nfs,tar) | ✅ (rsync,scp,sshfs,nfs,tar) | ✅ (rsync,scp,sshfs,nfs,tar) | ✅ (rsync,scp,sshfs,nfs,tar) |
 | 7.9 | ✅ (rsync,scp,sshfs,nfs,tar) | ✅ (rsync,scp,sshfs,nfs,tar) | ✅ (rsync,scp,sshfs,nfs,tar) | ✅ (rsync,scp,sshfs,nfs,tar) |
 | 7.8 | ✅ (rsync,scp,sshfs,nfs,tar) | ✅ (rsync,scp,sshfs,nfs,tar) | ✅ (rsync,scp,sshfs,nfs,tar) | — |
 | 7.7 | ✅ (rsync,scp,sshfs,nfs,tar) | ✅ (rsync,scp,sshfs,nfs,tar) | ✅ (rsync,scp,sshfs,nfs,tar) | — |
@@ -277,7 +278,7 @@ You can also give only the leading, `.` separated part of a release. The newest 
 ...
 ```
 
-Here `release: "7"` runs the newest `7.x` release of OpenBSD. Each part you give has to match in full, so a release that does not exist fails the job instead of quietly falling back to another one.
+Here `release: "7"` runs the newest `7.x` release of OpenBSD. Every leading part works the same way, this action ships 7, 8. Each part you give has to match in full, so a release that does not exist fails the job instead of quietly falling back to another one.
 
 ## 6. Select architecture
 
