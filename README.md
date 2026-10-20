@@ -254,7 +254,7 @@ The VM is using all the cpu cores of the host by default, you can use `cpu` opti
 
 ## 5. Select release
 
-It uses [the OpenBSD 7.9](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
+It uses [the OpenBSD 8.0](conf/default.release.conf) by default, you can use `release` option to use another version of OpenBSD:
 
 ```yaml
 ...
@@ -274,11 +274,11 @@ You can also give only the leading, `.` separated part of a release. The newest 
       id: test
       uses: vmactions/openbsd-vm@v1
       with:
-        release: "7"
+        release: "8"
 ...
 ```
 
-Here `release: "7"` runs the newest `7.x` release of OpenBSD. Every leading part works the same way, this action ships 7, 8. Each part you give has to match in full, so a release that does not exist fails the job instead of quietly falling back to another one.
+Here `release: "8"` runs the newest `8.x` release of OpenBSD. Every leading part works the same way, this action ships 7, 8. Each part you give has to match in full, so a release that does not exist fails the job instead of quietly falling back to another one.
 
 ## 6. Select architecture
 
